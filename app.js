@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 app.post('/register', userRouter);
-// app.post('/login', userRouter);
+app.post('/login', userRouter);
 // app.get('/profile', userRouter);
 
 (async () => {

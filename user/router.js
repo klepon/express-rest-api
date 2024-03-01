@@ -43,14 +43,14 @@ router.post('/login', async (req, res) => {
     const result = await pool.query(query, [username]);
 
     if (result.rows.length === 0) {
-      return res.status(404).send('User not found');
+      return res.status(404).send('Invalid user or password');
     }
 
     const user = result.rows[0];
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return res.status(401).send('Invalid password');
+      return res.status(401).send('Invalid user or password');
     }
 
     const token = jwt.sign({ username: user.username }, 'secret_key');
