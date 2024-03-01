@@ -18,7 +18,7 @@ tanpa user/pass
 `$ psql -U an*****di** -d postgres`
 
 ### perintah dalam server/postgres (#)
-pastikan sudha melakukan akses terlebih dahulu  
+pastikan sudah melakukan akses terlebih dahulu  
 `# \q` keluar dari server
 `# \l` list database  
 `# CREATE DATABASE database_name` buat database  
@@ -30,7 +30,9 @@ pastikan sudha melakukan akses terlebih dahulu
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL
 );` buat table  
-`# DROP TABLE IF EXISTS table _name;` hapus table
+`# DROP TABLE IF EXISTS table _name;` hapus table  
+untuk melihat isi table atau operasi table gunakan sitak sql, misal  
+`# SELECT * FROM table_name;`
 
 ## extension
 perlu aktivate uuid jika dipake  
