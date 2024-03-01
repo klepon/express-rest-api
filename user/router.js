@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../database/pool.js')
+require('dotenv').config();
 
 const router = express.Router();
 
@@ -53,7 +54,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).send('Invalid user or password');
     }
 
-    const token = jwt.sign({ username: user.username }, 'secret_key');
+    const token = jwt.sign({ username: user.username }, process.env.LOGIN_JWT_SECRET);
     res.status(200).json({ token });
   } catch (error) {
     console.error(error);
@@ -66,7 +67,7 @@ function authenticateToken(req, res, next) {
   const token = req.headers['authorization'];
   if (!token) return res.status(401).send('Access denied');
 
-  jwt.verify(token, 'secret_key', (err, user) => {
+  jwt.verify(token, process.env.LOGIN_JWT_SECRET, (err, user) => {
     if (err) return res.status(403).send('Invalid token');
     req.user = user;
     next();

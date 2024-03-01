@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 
 app.post('/register', userRouter);
 app.post('/login', userRouter);
-// app.get('/profile', userRouter);
+app.get('/profile', userRouter);
 
 (async () => {
   await createTableUser();
