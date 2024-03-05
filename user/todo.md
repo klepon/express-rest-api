@@ -3,7 +3,7 @@
 * ~~/login~~
 * ~~/profile/:puid - public - name~~
 * ~~/my-profile - private - name, user, pass, email, avatar, description, address~~
-* /update/:uid - name, user, pass, email
+* ~~/update/:uid - name, user, pass, email~~
 * /delete/:uid
 * /admin/profile/:uid - name, user, pass, email, avatar, description, address, uid, puid, block, role, email_valid
 * /verify-email - email verifikasi

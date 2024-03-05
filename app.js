@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 app.post("/register", userRouter);
 app.post("/login", userRouter);
 app.get("/my-profile", userRouter);
+app.post("/my-profile", userRouter);
 app.get("/profile/:puid", userRouter);
 
 (async () => {
