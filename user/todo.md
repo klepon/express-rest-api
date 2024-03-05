@@ -12,4 +12,4 @@
 * /update/:uid - avatar, description, address
 * /public/profile/:puid - avatar, description, address
 * /admin/profile/:puid - avatar, description, address
-* /login - tambahakan salt yg di set lewat envar di jwt.sign, misal; username,uid,randomTextTanpaComa,email untuk menghindari brute force untuk mendapatkan salt jwt secret
+* /login - tambahakan expired dan auto refresh jika refresh token disertakan

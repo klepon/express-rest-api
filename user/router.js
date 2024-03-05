@@ -5,6 +5,7 @@ const pool = require("../database/pool.js");
 require("dotenv").config();
 
 const router = express.Router();
+const tableName = "users";
 
 const resError = (res, resCode, errorCode, errorSeverity, errorDetail) => {
   res.status(resCode).json({
@@ -36,6 +37,7 @@ const authenticateToken = (req, res, next) => {
 };
 
 /* register
+* body { name: string, email: string, username: string, password: string }
 * return: User registered successfully
 * error, response code 500
   "error": {
@@ -50,7 +52,9 @@ router.post("/register", async (req, res, next) => {
     const { name, email, username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const query =
-      "INSERT INTO users (name, email, username, password, role) VALUES ($1, $2, $3, $4, $5)";
+      "INSERT INTO " +
+      tableName +
+      " (name, email, username, password, role) VALUES ($1, $2, $3, $4, $5)";
     await pool.query(query, [name, email, username, hashedPassword, "user"]);
     res.status(201).send("User registered successfully");
   } catch (error) {
@@ -59,8 +63,8 @@ router.post("/register", async (req, res, next) => {
 });
 
 /* login
-* return 
-  { "token": "jwt token" }
+* body { username: string, password: string }
+* return { token: string }
 * error:
   - 401, Invalid user or password
   - 500, Internal Server Error
@@ -68,7 +72,7 @@ router.post("/register", async (req, res, next) => {
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
-    const query = "SELECT * FROM users WHERE username = $1";
+    const query = "SELECT * FROM " + tableName + " WHERE username = $1";
     const result = await pool.query(query, [username]);
 
     if (result.rows.length === 0) {
@@ -94,7 +98,8 @@ router.post("/login", async (req, res) => {
 });
 
 /* my profile
-* return {name: user_name, eamil: user_email, username: user_uername}
+* headers: authorization: string, ie: jwt token without bearer
+* return {name: string, eamil: string, username: string}
 * error:
   - 401, Access denied
   - 403, Invalid token
@@ -102,7 +107,8 @@ router.post("/login", async (req, res) => {
 */
 router.get("/my-profile", authenticateToken, async (req, res) => {
   try {
-    const query = "SELECT name, email, username FROM users WHERE username = $1";
+    const query =
+      "SELECT name, email, username FROM " + tableName + " WHERE username = $1";
     const result = await pool.query(query, [req.user.username]);
     res.json(result.rows[0]);
   } catch (error) {
@@ -112,14 +118,15 @@ router.get("/my-profile", authenticateToken, async (req, res) => {
 });
 
 /* public profile
-* return { name: user_name}
+* params puid: string
+* return { name: string}
 * error:
   - 404, User not found
   - 500, Internal Server Error
 */
 router.get("/profile/:puid", async (req, res) => {
   try {
-    const query = "SELECT name FROM users WHERE puid = $1";
+    const query = "SELECT name FROM " + tableName + " WHERE puid = $1";
     const result = await pool.query(query, [req.params.puid]);
     if (result.rows.length === 0) res.status(404).send("User not found");
     else res.json(result.rows[0]);
