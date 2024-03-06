@@ -4,13 +4,17 @@ const createTableQuery = `
   CREATE TABLE IF NOT EXISTS users (
     uid SERIAL PRIMARY KEY,
     puid UUID DEFAULT uuid_generate_v4() UNIQUE,
-    name VARCHAR(255) NOT NULL,
+    display_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    valid BOOLEAN DEFAULT FALSE,
-    block BOOLEAN DEFAULT FALSE,
-    role VARCHAR(11) NOT NULL
+    email_validation INTEGER NOT NULL,
+    is_blocked BOOLEAN DEFAULT FALSE,
+    role VARCHAR(11) NOT NULL,
+    avatar_id INTEGER,
+    bio VARCHAR(255),
+    address VARCHAR(255),
+    latlng VARCHAR(30)
   )
 `;
 

@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const pool = require("../database/pool.js");
 const fatalError = require("../util/error.js");
+const isMissingProperty = require("../util/propertyChecker.js");
 require("dotenv").config();
 
 // check envar for jwt token
@@ -18,22 +19,43 @@ if (process.env.LOGIN_JWT_SECRET.length < 512) {
 const router = express.Router();
 const tableName = "users";
 
-const resError = (res, resCode, errorCode, errorSeverity, errorDetail) => {
+const generateRandomNumber = () => {
+  const randomNumber = Math.floor(100000 + Math.random() * 900000);
+  return randomNumber;
+};
+
+const debugError = (error) => {
+  if (process.env.DEBUG_ERROR_REST_API) {
+    console.error("=== error: ", error);
+  }
+};
+
+const resError = (
+  res,
+  resCode,
+  errorCode,
+  errorSeverity,
+  errorDetail,
+  items = []
+) => {
   res.status(resCode).json({
     error: {
       code: errorCode,
       severity: errorSeverity,
       detail: errorDetail,
+      items: items,
     },
   });
 };
 
 const handleErrors = (error, res, resCode) => {
+  debugError(error);
   const errorCode = error.code || 500;
   const errorSeverity = error.severity || "ERROR";
   const errorDetail = error.detail || "Internal Server Error";
+  const errorItems = error.deatilItems || [];
 
-  resError(res, resCode, errorCode, errorSeverity, errorDetail);
+  resError(res, resCode, errorCode, errorSeverity, errorDetail, errorItems);
 };
 
 const createJwtToken = (payload) =>
@@ -67,7 +89,7 @@ const authenticateToken = (req, res, next) => {
 };
 
 /* register
-* body { name: string, email: string, username: string, password: string }
+* body { display_name: string, email: string, username: string, password: string }
 * return: User registered successfully
 * error, response code 500
   "error": {
@@ -79,13 +101,27 @@ const authenticateToken = (req, res, next) => {
 */
 router.post("/register", async (req, res, next) => {
   try {
-    const { name, email, username, password } = req.body;
+    // check for missing property
+    isMissingProperty(
+      req.body,
+      ["display_name", "email", "username", "password"],
+      true
+    );
+
+    const { display_name, email, username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const query =
       "INSERT INTO " +
       tableName +
-      " (name, email, username, password, role) VALUES ($1, $2, $3, $4, $5)";
-    await pool.query(query, [name, email, username, hashedPassword, "user"]);
+      " (display_name, email, username, password, role, email_validation) VALUES ($1, $2, $3, $4, $5, $6)";
+    await pool.query(query, [
+      display_name,
+      email,
+      username,
+      hashedPassword,
+      "user",
+      generateRandomNumber(),
+    ]);
     res.status(201).send("User registered successfully");
   } catch (error) {
     handleErrors(error, res, 500);
@@ -120,14 +156,14 @@ router.post("/login", async (req, res) => {
     const token = createJwtToken({ puid: user.puid });
     res.status(200).json({ token });
   } catch (error) {
-    console.error(error);
+    debugError(error);
     res.status(500).send("Internal Server Error");
   }
 });
 
 /* my profile
 * auth header and response
-* return {name: string, eamil: string, username: string}
+* return {display_name: string, email: string, username: string, email_validation: number, is_blocked: string(f/t), role: string, avatar_id: number, bio: string, address: string, latlng: string, puid:string}
 * error:
   - auth header error
   - 500, Internal Server Error
@@ -135,18 +171,20 @@ router.post("/login", async (req, res) => {
 router.get("/my-profile", authenticateToken, async (req, res) => {
   try {
     const query =
-      "SELECT name, email, username FROM " + tableName + " WHERE puid = $1";
+      "SELECT display_name, email, username, email_validation, is_blocked, role, avatar_id, bio, address, latlng, puid FROM " +
+      tableName +
+      " WHERE puid = $1";
     const result = await pool.query(query, [req.user.puid]);
     res.status(200).json(result.rows[0]);
   } catch (error) {
-    console.error(error);
+    debugError(error);
     res.status(500).send("Internal Server Error");
   }
 });
 
 /* update my profile
 * auth header and response
-* body { name: string, email: string, username: string, password: string }
+* body {display_name: string, email: string, username: string, avatar_id: number, bio: string, address: string, latlng: string}
 * return 1 sukkses, 0 fail
 * error:
   - auth header error
@@ -154,21 +192,53 @@ router.get("/my-profile", authenticateToken, async (req, res) => {
 */
 router.post("/my-profile", authenticateToken, async (req, res) => {
   try {
-    const query =
+    // check for missing property
+    isMissingProperty(
+      req.body,
+      [
+        "display_name",
+        "email",
+        "username",
+        "avatar_id",
+        "bio",
+        "address",
+        "latlng",
+      ],
+      true
+    );
+
+    const { display_name, email, username, avatar_id, bio, address, latlng } =
+      req.body;
+
+    // check if email change
+    let query = "SELECT email FROM " + tableName + " WHERE puid = $1";
+    let result = await pool.query(query, [req.user.puid]);
+    const emailValidation =
+      result.rows[0].email !== email
+        ? ", email_validation=" + generateRandomNumber()
+        : "";
+
+    // make query
+    query =
       "UPDATE " +
       tableName +
-      " SET name=$1, email=$2, username=$3 WHERE puid = $4";
+      " SET display_name = $1, email = $2, username = $3, avatar_id = $4, bio = $5, address = $6, latlng = $7" +
+      emailValidation +
+      " WHERE puid = $8 AND is_blocked = 'f'";
     const value = [
-      req.body.name,
-      req.body.email,
-      req.body.username,
+      display_name,
+      email,
+      username,
+      parseInt(avatar_id) || null,
+      bio || null,
+      address || null,
+      latlng || null,
       req.user.puid,
     ];
-    const result = await pool.query(query, value);
+    result = await pool.query(query, value);
     res.status(200).json(result.rowCount);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
+    handleErrors(error, res, 500);
   }
 });
 
@@ -181,7 +251,10 @@ router.post("/my-profile", authenticateToken, async (req, res) => {
 */
 router.get("/profile/:puid", async (req, res) => {
   try {
-    const query = "SELECT name FROM " + tableName + " WHERE puid = $1";
+    const query =
+      "SELECT display_name, avatar_id, bio, address, latlng FROM " +
+      tableName +
+      " WHERE puid = $1 AND is_blocked = 'f'";
     const result = await pool.query(query, [req.params.puid]);
     if (result.rows.length === 0) {
       res.status(404).send("User not found");
@@ -189,7 +262,7 @@ router.get("/profile/:puid", async (req, res) => {
       res.status(200).json(result.rows[0]);
     }
   } catch (error) {
-    console.error(error);
+    debugError(error);
     res.status(500).send("Internal Server Error");
   }
 });
