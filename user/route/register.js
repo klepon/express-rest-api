@@ -1,12 +1,14 @@
 /* register
 * body { display_name: string, email: string, username: string, password: string }
-* return: User registered successfully
-* error, response code 500
-  "error": {
+* return code, body: 
+* 201, User registered successfully
+* 500, {
+    "error": {
       "code": "23505",
       "severity": "ERROR",
-      "detail": "Key (username)=(klep2) already exists."
-      "detail": "Key (email)=(test+1@test.com) already exists."
+      "detail": "Key (username)=(klep2) already exists." | "Key (email)=(test+1@test.com) already exists."
+      "items": []
+    }
   }
 */
 

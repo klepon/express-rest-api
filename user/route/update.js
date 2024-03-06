@@ -1,10 +1,26 @@
 /* update my profile
 * auth header and response
-* body {display_name: string, email: string, username: string, avatar_id: number, bio: string, address: string, latlng: string}
-* return 1 sukkses, 0 fail
-* error:
-  - auth header error
-  - 500, Internal Server Error
+* body {
+    "display_name": string
+    "email": string
+    "username": string
+    "avatar_id": number | empty string
+    "bio": string | empty string
+    "address": string | empty string
+    "latlng": string | empty string
+  }
+* return code, body
+* 200, 1 success, 0 fail
+* 500, {
+    "error": {
+        "code": 500,
+        "severity": "ERROR",
+        "detail": "Internal Server Error" | "Mising properties",
+        "items": [] | [coloumn_name]
+    }
+  }
+}
+* auth header error code and body
 */
 
 const pool = require("../../database/pool.js");
@@ -13,7 +29,7 @@ const { handleErrors } = require("../../util/error.js");
 const { tableName } = require("../database.js");
 const { generateRandomNumber } = require("../util.js");
 
-exports.updateProfile = async (req, res, _next) => {
+exports.update = async (req, res, _next) => {
   try {
     // check for missing property
     propertyChecker(
@@ -37,7 +53,7 @@ exports.updateProfile = async (req, res, _next) => {
     let query = "SELECT email FROM " + tableName + " WHERE puid = $1";
     let result = await pool.query(query, [req.user.puid]);
     const emailValidation =
-      result.rows[0].email !== email
+      result.rowCount === 1 && result.rows[0].email !== email
         ? ", email_validation=" + generateRandomNumber()
         : "";
 

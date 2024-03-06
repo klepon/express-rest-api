@@ -1,9 +1,15 @@
 /* public profile
 * params puid: string
-* return { name: string}
-* error:
-  - 404, User not found
-  - 500, Internal Server Error
+* return code, body
+* 200, {
+    "display_name": string
+    "avatar_id": number | null
+    "bio": string | null
+    "address": string | null
+    "latlng": string | null
+  }
+* 404, User not found
+* 500, Internal Server Error
 */
 
 const pool = require("../../database/pool.js");

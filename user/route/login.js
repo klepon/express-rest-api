@@ -1,10 +1,10 @@
 
 /* login
 * body { username: string, password: string }
-* return { token: string }
-* error:
-  - 401, Invalid user or password
-  - 500, Internal Server Error
+* return code, body:
+* 200, { token: string }
+* 401, Invalid user or password
+* 500, Internal Server Error
 */
 
 const bcrypt = require("bcrypt");

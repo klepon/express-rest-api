@@ -4,7 +4,7 @@
 * ~~/my-profile - get - private~~
 * ~~/my-profile/- post - private~~
 * ~~/profile/:puid - public~~
-* /delete/ - post - private; password
+* ~~/delete/ - post - private; password~~
 * /admin/profile/:puid - get
 * /verify-email - email verifikasi; email_validation
 
