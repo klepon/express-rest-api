@@ -1,4 +1,4 @@
-const isMissingProperty = (dataObj, requiredProperties, throwError = false) => {
+exports.propertyChecker = (dataObj, requiredProperties, throwError = false) => {
   const missing = [];
   for (const prop of requiredProperties) {
     const { [prop]: value = null } = dataObj;
@@ -16,5 +16,3 @@ const isMissingProperty = (dataObj, requiredProperties, throwError = false) => {
 
   return missing;
 };
-
-module.exports = isMissingProperty;

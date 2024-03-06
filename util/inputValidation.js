@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const userName = (text) => {
+exports.userName = (text) => {
   const minLength = process.env.VALIDATION_USERNAME_MIN_CHAR || 4;
   const regexString = `^[a-zA-Z0-9_-]{${minLength},}$`;
   const regex = new RegExp(regexString);
@@ -10,7 +10,7 @@ const userName = (text) => {
   return true;
 };
 
-const displayName = (text) => {
+exports.displayName = (text) => {
   const minLength = process.env.VALIDATION_DISPLAYNAME_MIN_CHAR || 4;
   const regexString = `^[a-zA-Z0-9\s_-]{${minLength},}$`;
   const regex = new RegExp(regexString);
@@ -20,7 +20,7 @@ const displayName = (text) => {
   return true;
 };
 
-const email = (text) => {
+exports.email = (text) => {
   const allowedSpecialCharInEmail =
     process.env.VALIDATION_EMAIL_ALLOWED_SPECIAL_CHAR_IN_EMAIL || "+-_";
   const allowedSpecialCharInDomain =
@@ -33,10 +33,4 @@ const email = (text) => {
     return false;
   }
   return true;
-};
-
-module.exports = {
-  userName,
-  displayName,
-  email,
 };

@@ -1,7 +1,9 @@
 const pool = require("../database/pool.js");
 
+exports.tableName = "users";
+
 const createTableQuery = `
-  CREATE TABLE IF NOT EXISTS users (
+  CREATE TABLE IF NOT EXISTS ${exports.tableName} (
     uid SERIAL PRIMARY KEY,
     puid UUID DEFAULT uuid_generate_v4() UNIQUE,
     display_name VARCHAR(255) NOT NULL,
@@ -23,17 +25,15 @@ const createTableQuery = `
 //   CREATE INDEX IF NOT EXISTS idx_users_id ON users (id);
 // `;
 
-createTable = async () => {
+exports.createTable = async () => {
   // const createTable = async () => {
   try {
-    // await pool.query(`DROP TABLE IF EXISTS users;`); // coment ini setelah table diupdate
+    // await pool.query(`DROP TABLE IF EXISTS ${exports.tableName};`); // coment ini setelah table diupdate
     await pool.query(createTableQuery);
     // ini tidak perlu karena otomatis buat btree index untuk field yg unik
     // await pool.query(createIndexQuery);
-    console.log("User table created successfully");
+    console.log(`${exports.tableName} table created successfully`);
   } catch (error) {
-    console.error("Error creating user table:", error);
+    console.error(`Error creating ${exports.tableName} table:`, error);
   }
 };
-
-module.exports = { createTable };

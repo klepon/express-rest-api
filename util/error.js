@@ -1,4 +1,4 @@
-const fatalError = (message, description) => {
+exports.fatalError = (message, description) => {
   console.error("Error: ", message);
   if (description) {
     console.error("==== ", description);
@@ -6,4 +6,26 @@ const fatalError = (message, description) => {
   process.exit(1);
 };
 
-module.exports = fatalError;
+exports.debugError = (error) => {
+  if (process.env.DEBUG_ERROR_REST_API) {
+    console.error("=== error: ", error);
+  }
+};
+
+exports.handleErrors = (error, res, resCode) => {
+  exports.debugError(error);
+  
+  const errorCode = error.code || 500;
+  const errorSeverity = error.severity || "ERROR";
+  const errorDetail = error.detail || "Internal Server Error";
+  const errorItems = error.deatilItems || [];
+
+  res.status(resCode).json({
+    error: {
+      code: errorCode,
+      severity: errorSeverity,
+      detail: errorDetail,
+      items: errorItems,
+    },
+  });
+};
