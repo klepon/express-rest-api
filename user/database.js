@@ -25,7 +25,7 @@ const createTableQuery = `
 //   CREATE INDEX IF NOT EXISTS idx_users_id ON users (id);
 // `;
 
-exports.createTable = async () => {
+exports.createTableUser = async () => {
   // const createTable = async () => {
   try {
     // await pool.query(`DROP TABLE IF EXISTS ${exports.tableName};`); // coment ini setelah table diupdate

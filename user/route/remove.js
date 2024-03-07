@@ -30,6 +30,9 @@ exports.remove = async (req, res, _next) => {
       return res.status(401).send("Invalid session or password");
     }
 
+    // record uid in request for use onFinish
+    req.deletedUid = user.uid;
+
     // execute delete user
     query = "DELETE FROM " + tableName + " WHERE uid = $1";
     await pool.query(query, [user.uid]);
