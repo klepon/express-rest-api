@@ -7,6 +7,9 @@ const { authenticateToken } = require("./util.js");
 const { update } = require("./route/update.js");
 const { publicProfile } = require("./route/publicProfile.js");
 const { remove } = require("./route/remove.js");
+const { verifyEmail } = require("./route/verifyEmail.js");
+const { sendEmailVerificationCode } = require("./route/sendEmailVerificationCode.js");
+const { setAsMiddleWare } = require("../util/middleware.js");
 require("dotenv").config();
 
 // check envar for jwt token
@@ -20,11 +23,17 @@ if (process.env.LOGIN_JWT_SECRET.length < 512) {
 }
 
 const router = express.Router();
+
+// private route
 router.post("/register", register);
 router.post("/login", login);
-router.get("/my-profile", authenticateToken, profile);
 router.post("/my-profile", authenticateToken, update);
-router.get("/profile/:puid", publicProfile);
 router.post("/delete", authenticateToken, remove);
+router.post("/validate-email", authenticateToken, verifyEmail)
+router.get("/my-profile", authenticateToken, profile);
+router.get("/request-email-verification-code", authenticateToken, setAsMiddleWare, profile, sendEmailVerificationCode)
+
+// public route
+router.get("/profile/:puid", publicProfile);
 
 module.exports = router;

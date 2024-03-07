@@ -1,4 +1,5 @@
 /* update my profile
+* POST
 * auth header and response
 * body {
     "display_name": string

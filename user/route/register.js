@@ -1,4 +1,5 @@
 /* register
+* POST
 * body { display_name: string, email: string, username: string, password: string }
 * return code, body: 
 * 201, User registered successfully

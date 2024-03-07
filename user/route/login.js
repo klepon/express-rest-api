@@ -1,5 +1,6 @@
 
 /* login
+* POST
 * body { username: string, password: string }
 * return code, body:
 * 200, { token: string }

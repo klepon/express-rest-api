@@ -3,7 +3,7 @@ const { handleErrors } = require("../util/error");
 exports.removeMediaOnDeleteUser = async (req, res, next) => {
   res.on('finish', () => {
     try {
-      if(req.method === "POST" && req.url === "/delete") {
+      if(req.method === "POST" && req.url === "/delete" && req.deletedUid) {
         console.log("======== remove media for uid: ", req.deletedUid)
 
         // todo: delete media here

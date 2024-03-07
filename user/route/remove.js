@@ -1,12 +1,13 @@
 /* delete
- * auth header and response
- * body { password: string }
- * return code, body
- * 200, 1 success, 0 fail
- * 401, Invalid session or password
- * 500, Internal Server Error
- * auth header error code and body
- */
+* POST
+* auth header and response
+* body { password: string }
+* return code, body
+* 200, 1 success, 0 fail
+* 401, Invalid session or password
+* 500, Internal Server Error
+* auth header error code and body
+*/
 
 const bcrypt = require("bcrypt");
 const pool = require("../../database/pool.js");

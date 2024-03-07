@@ -1,4 +1,5 @@
 /* public profile
+* GET
 * params puid: string
 * return code, body
 * 200, {

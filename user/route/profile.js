@@ -1,12 +1,12 @@
-
 /* my profile
+* GET
 * auth header and response
 * return code, body
 * 200, {
     "display_name": string
     "email": string
     "username": string
-    "email_validation": number
+    "email_validation": number, 1 === valid
     "is_blocked": boolean
     "role": string
     "avatar_id": number | null
@@ -23,14 +23,20 @@ const pool = require("../../database/pool.js");
 const { debugError } = require("../../util/error.js");
 const { tableName } = require("../database.js");
 
-exports.profile = async (req, res) => {
+exports.profile = async (req, res, next) => {
   try {
     const query =
       "SELECT display_name, email, username, email_validation, is_blocked, role, avatar_id, bio, address, latlng, puid FROM " +
       tableName +
       " WHERE puid = $1";
     const result = await pool.query(query, [req.user.puid]);
-    res.status(200).json(result.rows[0]);
+
+    if (req.asMiddleWware) {
+      req.userData = result.rows[0];
+      next();
+    } else {
+      res.status(200).json(result.rows[0]);
+    }
   } catch (error) {
     debugError(error);
     res.status(500).send("Internal Server Error");
