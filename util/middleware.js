@@ -3,7 +3,7 @@
 * profile.js
 * use by sendEmailVerificationCode to get user data
 */
-exports.setAsMiddleWare = (req, _res, next) => {
-  req.asMiddleWware = true;
+exports.isMiddleWare = (req, _res, next) => {
+  req.isMiddleWare = true;
   next();
 };

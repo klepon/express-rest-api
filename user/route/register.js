@@ -19,6 +19,7 @@ const { propertyChecker } = require("../../util/propertyChecker.js");
 const { handleErrors } = require("../../util/error.js");
 const { tableName } = require("../database.js");
 const { generateRandomNumber } = require("../util.js");
+const { Role } = require("../constant.js");
 
 exports.register = async (req, res, _next) => {
   try {
@@ -40,7 +41,7 @@ exports.register = async (req, res, _next) => {
       email,
       username,
       hashedPassword,
-      "user",
+      Role.user,
       generateRandomNumber(),
     ]);
     res.status(201).send("User registered successfully");

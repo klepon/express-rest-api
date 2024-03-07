@@ -21,21 +21,32 @@
 
 const pool = require("../../database/pool.js");
 const { debugError } = require("../../util/error.js");
+const { filterObject } = require("../../util/filterObject.js");
 const { tableName } = require("../database.js");
 
 exports.profile = async (req, res, next) => {
   try {
-    const query =
-      "SELECT display_name, email, username, email_validation, is_blocked, role, avatar_id, bio, address, latlng, puid FROM " +
-      tableName +
-      " WHERE puid = $1";
+    const query = "SELECT * FROM " + tableName + " WHERE puid = $1";
     const result = await pool.query(query, [req.user.puid]);
 
-    if (req.asMiddleWware) {
+    if (req.isMiddleWare) {
       req.userData = result.rows[0];
       next();
     } else {
-      res.status(200).json(result.rows[0]);
+      const privateData = [
+        "display_name",
+        "email",
+        "username",
+        "email_validation",
+        "is_blocked",
+        "role",
+        "avatar_id",
+        "bio",
+        "address",
+        "latlng",
+        "puid",
+      ];
+      res.status(200).json(filterObject(result.rows[0], privateData));
     }
   } catch (error) {
     debugError(error);
