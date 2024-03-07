@@ -2,30 +2,39 @@
  * GET
  * auth header and response
  * return code, body
- * 200, Email sent
+ * 200, masked email, ang*********@gmail.com
+ * 401, {
+    "code": "EAUTH",
+    "response": "534-5.7.9 Application-specific password required. For more information, go to\n534 5.7.9  https://support.google.com/mail/?p=InvalidSecondFactor g24-20020a170902869800b001dbae7b85b1sm14176175plo.237 - gsmtp",
+    "responseCode": 534,
+    "command": "AUTH PLAIN"
+  }
  * auth header error code and body
  * get profile error response
  */
 
-const pool = require("../../database/pool.js");
 const { handleErrors } = require("../../util/error.js");
+const { sendEmail } = require("../../util/mailer.js");
 const { maskEmail } = require("../../util/maskEmail.js");
-const { tableName } = require("../database.js");
 
-// todo: change this to use get profile
-exports.sendEmailVerificationCode = async (req, res, _next) => {
+exports.sendEmailVerificationCode = async (req, res, next) => {
   try {
-    if (req.userData) {
-      console.log(
-        "========= send email code via email: ",
-        maskEmail(req.userData.email),
-        req.userData.email_validation
+    if (req.userData && req.userData.email_validation != 1) {
+      sendEmail(
+        req.userData.email,
+        "Email verification code",
+        "Your verification code<br /><strong>" +
+          req.userData.email_validation +
+          "</strong>",
+        ({ error, info }) => {
+          if (!error) {
+            res.status(200).send(maskEmail(req.userData.email));
+          } else {
+            res.status(401).json(error);
+          }
+        }
       );
-
-      // todo: next send email
     }
-
-    res.status(200).json("Email sent");
   } catch (error) {
     handleErrors(error, res, 500);
   }
