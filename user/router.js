@@ -3,14 +3,15 @@ const fatalError = require("../util/error.js");
 const { register } = require("./route/register.js");
 const { login } = require("./route/login.js");
 const { profile } = require("./route/profile.js");
-const { authenticateToken } = require("./util.js");
+const { authenticateToken, adminSetPuid } = require("./util.js");
 const { update } = require("./route/update.js");
 const { publicProfile, publicSetPuid } = require("./route/publicProfile.js");
 const { remove } = require("./route/remove.js");
 const { verifyEmail } = require("./route/verifyEmail.js");
 const { sendEmailVerificationCode } = require("./route/sendEmailVerificationCode.js");
 const { isMiddleWare } = require("../util/middleware.js");
-const { adminSetPuid, adminProfile } = require("./route/adminProfile.js");
+const { adminProfile } = require("./route/adminProfile.js");
+const { adminUpdate } = require("./route/adminUpdate.js");
 require("dotenv").config();
 
 // check envar for jwt token
@@ -35,6 +36,7 @@ router.get("/my-profile", authenticateToken, profile);
 router.get("/request-email-verification-code", authenticateToken, isMiddleWare, profile, sendEmailVerificationCode)
 
 // admin route
+router.post("/admin/update/:puid", authenticateToken, isMiddleWare, profile, adminSetPuid, adminUpdate)
 router.get("/admin/profile/:puid", authenticateToken, isMiddleWare, profile, adminSetPuid,  profile, adminProfile);
 
 // public route

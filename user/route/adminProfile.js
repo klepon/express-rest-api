@@ -1,4 +1,5 @@
 /* profile request by admin 
+* use: auth, profile
 * GET
 * params puid: string
 * return code, body
@@ -14,10 +15,6 @@
     "address": string | null
     "latlng": string | null
     "puid": string
-    "email": string
-    "username": string
-    "is_blocked": string
-    "role": string
   }
 * get profile error response
 */
@@ -41,10 +38,6 @@ exports.adminProfile = async (req, res, _next) => {
         "address",
         "latlng",
         "puid",
-        "email",
-        "username",
-        "is_blocked",
-        "role",
       ];
       res.status(200).json(filterObject(req.userData, privateData));
     } else {
@@ -56,12 +49,3 @@ exports.adminProfile = async (req, res, _next) => {
   }
 };
 
-exports.adminSetPuid = (req, res, next) => {
-  if (req.userData.role === Role.admin) {
-    req.user = {};
-    req.user.puid = req.params.puid;
-  } else {
-    return res.status(401).send("Access denied");
-  }
-  next();
-};

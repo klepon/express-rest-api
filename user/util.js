@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { Role } = require("./constant");
 
 exports.generateRandomNumber = () => {
   const randomNumber = Math.floor(100000 + Math.random() * 900000);
@@ -11,7 +12,7 @@ exports.createJwtToken = (payload) => {
   });
 };
 
-/* auth header
+/** auth header
 * headers: authorization: string, ie: jwt token without bearer
 * return { puid: user.uid } from login
 * error:
@@ -34,4 +35,19 @@ exports.authenticateToken = (req, res, next) => {
     req.user = user;
     next();
   });
+};
+
+/** set custom puid for profile as middleware
+ * only admin allow to use this
+ * required: authenticateToken, isMiddleWare, profile before use this
+ * see admin route on user for sample
+ */
+exports.adminSetPuid = (req, res, next) => {
+  if (req.userData.role === Role.admin) {
+    req.user = {};
+    req.user.puid = req.params.puid;
+  } else {
+    return res.status(401).send("Access denied");
+  }
+  next();
 };

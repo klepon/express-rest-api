@@ -1,4 +1,5 @@
 /* public profile
+* use: profile
 * GET
 * params puid: string
 * return code, body
@@ -36,6 +37,7 @@ exports.publicProfile = async (req, res, _next) => {
   }
 };
 
+/** set custom puid for profile as middleware */
 exports.publicSetPuid = (req, _res, next) => {
   req.user = {}
   req.user.puid = req.params.puid;
