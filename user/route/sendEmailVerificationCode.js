@@ -1,6 +1,6 @@
-/* send email verification code
+/** send email verification code
+ * useL auth, user
  * GET
- * auth header and response
  * return code, body
  * 200, masked email, ang*********@gmail.com
  * 401, {
@@ -9,8 +9,6 @@
     "responseCode": 534,
     "command": "AUTH PLAIN"
   }
- * auth header error code and body
- * get profile error response
  */
 
 const { handleErrors } = require("../../util/error.js");

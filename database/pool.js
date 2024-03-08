@@ -1,5 +1,4 @@
 const { Pool } = require("pg");
-require("dotenv").config();
 
 const dbPORT = process.env.DB_PORT || 5432;
 

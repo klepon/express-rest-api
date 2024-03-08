@@ -1,5 +1,5 @@
-/* profile request by admin 
-* use: auth, profile
+/** profile request by admin 
+* use: auth, user, adminPuid, user
 * GET
 * params puid: string
 * return code, body
@@ -16,12 +16,10 @@
     "latlng": string | null
     "puid": string
   }
-* get profile error response
 */
 
 const { debugError } = require("../../util/error.js");
 const { filterObject } = require("../../util/filterObject.js");
-const { Role } = require("../constant.js");
 
 exports.adminProfile = async (req, res, _next) => {
   try {
@@ -40,8 +38,6 @@ exports.adminProfile = async (req, res, _next) => {
         "puid",
       ];
       res.status(200).json(filterObject(req.userData, privateData));
-    } else {
-      res.status(404).send("User not found");
     }
   } catch (error) {
     debugError(error);

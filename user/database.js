@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const pool = require("../database/pool.js");
 const { Role } = require("./constant.js");
-require("dotenv").config();
 
 exports.tableName = "users";
 

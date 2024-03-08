@@ -1,4 +1,4 @@
-/* register
+/** register
 * POST
 * body { display_name: string, email: string, username: string, password: string }
 * return code, body: 

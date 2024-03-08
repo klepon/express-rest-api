@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 exports.userName = (text) => {
   const minLength = process.env.VALIDATION_USERNAME_MIN_CHAR || 4;
   const regexString = `^[a-zA-Z0-9_-]{${minLength},}$`;

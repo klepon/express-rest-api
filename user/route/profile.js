@@ -1,6 +1,6 @@
-/* my profile
+/** my profile
+* use: auth, user
 * GET
-* auth header and response
 * return code, body
 * 200, {
     "display_name": string
@@ -16,23 +16,14 @@
     "puid": string
   }
 * 500, Internal Server Error
-* auth header error code and body
 */
 
-const pool = require("../../database/pool.js");
 const { debugError } = require("../../util/error.js");
 const { filterObject } = require("../../util/filterObject.js");
-const { tableName } = require("../database.js");
 
 exports.profile = async (req, res, next) => {
   try {
-    const query = "SELECT * FROM " + tableName + " WHERE puid = $1";
-    const result = await pool.query(query, [req.user.puid]);
-
-    if (req.isMiddleWare) {
-      req.userData = result.rows[0];
-      next();
-    } else {
+    if (req.userData) {
       const privateData = [
         "display_name",
         "email",
@@ -46,7 +37,7 @@ exports.profile = async (req, res, next) => {
         "latlng",
         "puid",
       ];
-      res.status(200).json(filterObject(result.rows[0], privateData));
+      res.status(200).json(filterObject(req.userData, privateData));
     }
   } catch (error) {
     debugError(error);

@@ -1,34 +1,23 @@
 /** delete
- * use: auth, user
+ * use: auth, user, adminPuid
  * POST
- * body { password: string }
+ * params puid: string
  * return code, body
  * 200, 1 success, 0 fail
- * 401, Invalid session or password
  * 500, Internal Server Error
  */
 
-const bcrypt = require("bcrypt");
 const pool = require("../../database/pool.js");
 const { tableName } = require("../database.js");
 const { debugError } = require("../../util/error.js");
 const { deletedUid } = require("../../util/constant.js");
 
-exports.remove = async (req, res, _next) => {
+exports.adminRemove = async (req, res, _next) => {
   try {
     if (req.userData) {
-      const validPassword = await bcrypt.compare(
-        req.body.password,
-        req.userData.password
-      );
-      if (!validPassword) {
-        return res.status(401).send("Invalid session or password");
-      }
-
       // record uid in request for use onFinish
       req[deletedUid] = req.userData.uid;
 
-      // execute delete user
       const result = await pool.query(
         "DELETE FROM " + tableName + " WHERE uid = $1",
         [req.userData.uid]

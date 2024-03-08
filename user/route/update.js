@@ -1,6 +1,6 @@
-/* update my profile
+/** update my profile
+* use: auth, user
 * POST
-* auth header and response
 * body {
     "display_name": string
     "email": string
@@ -51,32 +51,32 @@ exports.update = async (req, res, _next) => {
       req.body;
 
     // check if email change
-    let query = "SELECT email FROM " + tableName + " WHERE puid = $1";
-    let result = await pool.query(query, [req.user.puid]);
-    const emailValidation =
-      result.rowCount === 1 && result.rows[0].email !== email
-        ? ", email_validation=" + generateRandomNumber()
-        : "";
+    if (req.userData) {
+      const emailValidation =
+        req.userData.email !== email
+          ? ", email_validation=" + generateRandomNumber()
+          : "";
 
-    // make query
-    query =
-      "UPDATE " +
-      tableName +
-      " SET display_name = $1, email = $2, username = $3, avatar_id = $4, bio = $5, address = $6, latlng = $7" +
-      emailValidation +
-      " WHERE puid = $8 AND is_blocked = 'f'";
-    const value = [
-      display_name,
-      email,
-      username,
-      parseInt(avatar_id) || null,
-      bio || null,
-      address || null,
-      latlng || null,
-      req.user.puid,
-    ];
-    result = await pool.query(query, value);
-    res.status(200).json(result.rowCount);
+      // make query
+      const query =
+        "UPDATE " +
+        tableName +
+        " SET display_name = $1, email = $2, username = $3, avatar_id = $4, bio = $5, address = $6, latlng = $7" +
+        emailValidation +
+        " WHERE puid = $8 AND is_blocked = 'f'";
+      const value = [
+        display_name,
+        email,
+        username,
+        parseInt(avatar_id) || null,
+        bio || null,
+        address || null,
+        latlng || null,
+        req.userPuid,
+      ];
+      const result = await pool.query(query, value);
+      res.status(200).json(result.rowCount);
+    }
   } catch (error) {
     handleErrors(error, res, 500);
   }

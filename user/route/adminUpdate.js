@@ -1,6 +1,6 @@
-/* update profile by admin
+/** update profile by admin
+ * use: auth, user, adminPuid
 * POST
-* auth header and response
 * body {
     "is_blocked": boolean
     "role": string
@@ -16,7 +16,6 @@
     }
   }
 }
-* auth header error code and body
 */
 
 const pool = require("../../database/pool.js");
@@ -30,10 +29,10 @@ exports.adminUpdate = async (req, res, _next) => {
     propertyChecker(req.body, ["is_blocked", "role"], true);
 
     const { is_blocked, role } = req.body;
-    query =
+    const query =
       "UPDATE " + tableName + " SET is_blocked = $1, role = $2 WHERE puid = $3";
-    const value = [is_blocked, role, req.user.puid];
-    result = await pool.query(query, value);
+    const value = [is_blocked, role, req.userPuid];
+    const result = await pool.query(query, value);
     res.status(200).json(result.rowCount);
   } catch (error) {
     handleErrors(error, res, 500);

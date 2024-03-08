@@ -1,6 +1,6 @@
-/* email verification
+/** email verification
+* useL auth
 * POST
-* auth header and response
 * body {
     "code": string
   }
@@ -15,7 +15,6 @@
     }
   }
 }
-* auth header error code and body
 */
 
 const pool = require("../../database/pool.js");
@@ -28,7 +27,7 @@ exports.verifyEmail = async (req, res, _next) => {
       "UPDATE " +
       tableName +
       " SET email_validation = $1 WHERE puid = $2 AND email_validation = $3";
-    const value = [1, req.user.puid, req.body.code];
+    const value = [1, req.userPuid, req.body.code];
     const result = await pool.query(query, value);
 
     res.status(200).json(result.rowCount);

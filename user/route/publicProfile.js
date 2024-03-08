@@ -1,5 +1,5 @@
-/* public profile
-* use: profile
+/** public profile
+* use: publicPuid, user
 * GET
 * params puid: string
 * return code, body
@@ -10,7 +10,6 @@
     "address": string | null
     "latlng": string | null
   }
-* get profile error response
 */
 
 const { debugError } = require("../../util/error.js");
@@ -18,7 +17,7 @@ const { filterObject } = require("../../util/filterObject.js");
 
 exports.publicProfile = async (req, res, _next) => {
   try {
-    if (req.userData) {
+    if (req.userData && !req.userData.is_blocked) {
       const privateData = [
         "display_name",
         "avatar_id",
@@ -37,9 +36,3 @@ exports.publicProfile = async (req, res, _next) => {
   }
 };
 
-/** set custom puid for profile as middleware */
-exports.publicSetPuid = (req, _res, next) => {
-  req.user = {}
-  req.user.puid = req.params.puid;
-  next();
-};

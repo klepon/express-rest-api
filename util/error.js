@@ -1,5 +1,5 @@
 exports.fatalError = (message, description) => {
-  console.error("Error: ", message);
+  console.error("==== Error: ", message);
   if (description) {
     console.error("==== ", description);
   }
@@ -8,7 +8,7 @@ exports.fatalError = (message, description) => {
 
 exports.debugError = (error) => {
   if (process.env.DEBUG_ERROR_REST_API) {
-    console.error("====== debugError active, set DEBUG_ERROR_REST_API false to turn off");
+    console.error("==== debugError active, set DEBUG_ERROR_REST_API false to turn off ====");
     console.error("=== error: ", error);
   }
 };

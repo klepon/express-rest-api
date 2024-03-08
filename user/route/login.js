@@ -1,18 +1,17 @@
-
-/* login
-* POST
-* body { username: string, password: string }
-* return code, body:
-* 200, { token: string }
-* 401, Invalid user or password
-* 500, Internal Server Error
-*/
+/** login
+ * POST
+ * body { username: string, password: string }
+ * return code, body:
+ * 200, { token: string }
+ * 401, Invalid user or password
+ * 500, Internal Server Error
+ */
 
 const bcrypt = require("bcrypt");
 const pool = require("../../database/pool.js");
-const { createJwtToken } = require("../util.js");
 const { debugError } = require("../../util/error.js");
 const { tableName } = require("../database.js");
+const { createJwtToken } = require("../middleware/auth.js");
 
 exports.login = async (req, res) => {
   try {
