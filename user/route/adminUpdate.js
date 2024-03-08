@@ -3,7 +3,7 @@
 * POST
 * body {
     "is_blocked": boolean
-    "role": string
+    "role": string: Role
   }
 * return code, body
 * 200, 1 success, 0 fail
@@ -26,7 +26,7 @@ const { tableName } = require("../database.js");
 exports.adminUpdate = async (req, res, _next) => {
   try {
     // check for missing property
-    propertyChecker(req.body, ["is_blocked", "role"], true);
+    propertyChecker(req.body, ["is_blocked", "role"]);
 
     const { is_blocked, role } = req.body;
     const query =

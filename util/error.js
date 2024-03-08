@@ -7,26 +7,30 @@ exports.fatalError = (message, description) => {
 };
 
 exports.debugError = (error) => {
-  if (process.env.DEBUG_ERROR_REST_API) {
-    console.error("==== debugError active, set DEBUG_ERROR_REST_API false to turn off ====");
+  if (process.env.DEBUG_ERROR_REST_API === "true") {
+    console.error(
+      '==== debugError active, set DEBUG_ERROR_REST_API="false" to turn off ===='
+    );
     console.error("=== error: ", error);
   }
 };
 
 exports.handleErrors = (error, res, resCode) => {
   exports.debugError(error);
-  
-  const errorCode = error.code || 500;
-  const errorSeverity = error.severity || "ERROR";
+
+  const errorCode = error.code || "-";
+  const errorSeverity = error.severity || "-";
   const errorDetail = error.detail || "Internal Server Error";
-  const errorItems = error.deatilItems || [];
+  const errorMissingItems = error.misingItems || [];
+  const errorInvalidItems = error.invalidItems || [];
 
   res.status(resCode).json({
     error: {
       code: errorCode,
       severity: errorSeverity,
       detail: errorDetail,
-      items: errorItems,
+      missing: errorMissingItems,
+      invalid: errorInvalidItems,
     },
   });
 };

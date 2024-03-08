@@ -1,4 +1,4 @@
-/** update my profile
+/** update my profile, see input validation for body value
 * use: auth, user
 * POST
 * body {
@@ -33,19 +33,15 @@ const { generateRandomNumber } = require("../util.js");
 exports.update = async (req, res, _next) => {
   try {
     // check for missing property
-    propertyChecker(
-      req.body,
-      [
-        "display_name",
-        "email",
-        "username",
-        "avatar_id",
-        "bio",
-        "address",
-        "latlng",
-      ],
-      true
-    );
+    propertyChecker(req.body, [
+      "display_name",
+      "email",
+      "username",
+      "avatar_id",
+      "bio",
+      "address",
+      "latlng",
+    ]);
 
     const { display_name, email, username, avatar_id, bio, address, latlng } =
       req.body;

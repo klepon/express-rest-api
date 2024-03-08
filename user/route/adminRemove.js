@@ -1,6 +1,6 @@
 /** delete
  * use: auth, user, adminPuid
- * POST
+ * GET
  * params puid: string
  * return code, body
  * 200, 1 success, 0 fail

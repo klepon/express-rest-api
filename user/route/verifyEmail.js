@@ -1,4 +1,4 @@
-/** email verification
+/** email verification, see input validation for body value
 * useL auth
 * POST
 * body {
@@ -19,10 +19,13 @@
 
 const pool = require("../../database/pool.js");
 const { handleErrors } = require("../../util/error.js");
+const { propertyChecker } = require("../../util/propertyChecker.js");
 const { tableName } = require("../database.js");
 
 exports.verifyEmail = async (req, res, _next) => {
   try {
+    propertyChecker(req.body, ["code"]);
+    
     const query =
       "UPDATE " +
       tableName +

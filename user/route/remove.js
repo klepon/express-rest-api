@@ -1,4 +1,4 @@
-/** delete
+/** delete, see input validation for body value
  * use: auth, user
  * POST
  * body { password: string }
@@ -13,9 +13,12 @@ const pool = require("../../database/pool.js");
 const { tableName } = require("../database.js");
 const { debugError } = require("../../util/error.js");
 const { deletedUid } = require("../../util/constant.js");
+const { propertyChecker } = require("../../util/propertyChecker.js");
 
 exports.remove = async (req, res, _next) => {
   try {
+    propertyChecker(req.body, ["password"]);
+    
     if (req.userData) {
       const validPassword = await bcrypt.compare(
         req.body.password,

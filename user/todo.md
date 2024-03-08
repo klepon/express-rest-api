@@ -11,8 +11,4 @@
 # expand login, tambahkan field dan fitur
 * ~~/admin/update/:puid - post; is_blocked, role, email_validation~~  
 * ~~/admin/delete - post; puid~~  
-* /register - data input validation  
-* /login - data input validation  
-* /update - data input validation  
-* /validate-email - data input validation  
-* /delete - data input validation  
+* add sanitize for bio, address 

@@ -1,6 +1,11 @@
-/** register
+/** register, see input validation for body value
 * POST
-* body { display_name: string, email: string, username: string, password: string }
+* body { 
+  display_name: string, 
+  email: string, 
+  username: string, 
+  password: string 
+}
 * return code, body: 
 * 201, User registered successfully
 * 500, {
@@ -24,11 +29,12 @@ const { Role } = require("../constant.js");
 exports.register = async (req, res, _next) => {
   try {
     // check for missing property
-    propertyChecker(
-      req.body,
-      ["display_name", "email", "username", "password"],
-      true
-    );
+    propertyChecker(req.body, [
+      "display_name",
+      "email",
+      "username",
+      "password",
+    ]);
 
     const { display_name, email, username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);

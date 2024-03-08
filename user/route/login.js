@@ -1,4 +1,4 @@
-/** login
+/** login, see input validation for body value
  * POST
  * body { username: string, password: string }
  * return code, body:
@@ -9,12 +9,15 @@
 
 const bcrypt = require("bcrypt");
 const pool = require("../../database/pool.js");
-const { debugError } = require("../../util/error.js");
+const { handleErrors } = require("../../util/error.js");
 const { tableName } = require("../database.js");
 const { createJwtToken } = require("../middleware/auth.js");
+const { propertyChecker } = require("../../util/propertyChecker.js");
 
 exports.login = async (req, res) => {
   try {
+    propertyChecker(req.body, ["username", "password"]);
+
     const { username, password } = req.body;
     const query =
       "SELECT password, puid FROM " + tableName + " WHERE username = $1";
@@ -34,7 +37,6 @@ exports.login = async (req, res) => {
     const token = createJwtToken({ puid: user.puid });
     res.status(200).json({ token });
   } catch (error) {
-    debugError(error);
-    res.status(500).send("Internal Server Error");
+    handleErrors(error, res, 500)
   }
 };
