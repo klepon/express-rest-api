@@ -33,7 +33,7 @@ exports.createTablePermission = async () => {
 
     await insertDefault();
     console.log(
-      `* ${tablePermission}: ${roleSuperAdmin} permission created successfully \n`
+      `* ${tablePermission}: default permission created successfully \n`
     );
   } catch (error) {
     console.error(`** Error creating table ${tablePermission}:`, error);

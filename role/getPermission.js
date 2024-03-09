@@ -1,7 +1,3 @@
-const pool = require("../database/pool.js");
-const { debugError } = require("../util/error.js");
-const { tableRole, tablePermission } = require("./constant.js");
-
 // const generatePermission = (data) => {
 //   return data.map((role) => {
 //     const roles = [];
@@ -11,30 +7,6 @@ const { tableRole, tablePermission } = require("./constant.js");
 //     return `${roles.join("")}:${role.permission}`;
 //   });
 // };
-
-exports.getRoleID = async (roleNames) => {
-  try {
-    return await pool.query(
-      `SELECT rid FROM ${tableRole} WHERE name = ANY($1)`,
-      [roleNames]
-    );
-  } catch (e) {
-    debugError(e);
-    return [];
-  }
-};
-
-exports.getPermissionIDs = async (permissionNames) => {
-  try {
-    return await pool.query(
-      `SELECT pid FROM ${tablePermission} WHERE permission = ANY($1)`,
-      [permissionNames]
-    );
-  } catch (e) {
-    debugError(e);
-    return [];
-  }
-};
 
 /**
  * check user permission, resturn res or continue
