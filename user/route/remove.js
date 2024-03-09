@@ -10,7 +10,7 @@
 
 const bcrypt = require("bcrypt");
 const pool = require("../../database/pool.js");
-const { tableName } = require("../database.js");
+const { tableName } = require("../database/user.js");
 const { debugError } = require("../../util/error.js");
 const { deletedUid } = require("../../util/constant.js");
 const { propertyChecker } = require("../../util/propertyChecker.js");

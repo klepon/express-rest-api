@@ -8,11 +8,13 @@ const {
   bio,
   address,
   code,
+  permission,
 } = require("./inputValidation");
 
 const validate = (check, text) => {
   switch (check) {
     case "display_name":
+    case "name":
       return displayName(text);
     case "username":
       return userName(text);
@@ -34,6 +36,8 @@ const validate = (check, text) => {
       return latlng(text);
     case "code":
       return code(text);
+    case "permission":
+      return permission(text);
   }
   return true;
 };

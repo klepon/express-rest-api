@@ -10,7 +10,7 @@ const { sendEmailVerificationCode } = require("./route/sendEmailVerificationCode
 const { adminProfile } = require("./route/adminProfile.js");
 const { adminUpdate } = require("./route/adminUpdate.js");
 const { publicSetPuid, adminSetPuid } = require("./middleware/puid.js");
-const { user } = require("./middleware/user.js");
+const { getUser } = require("./middleware/user.js");
 const { authToken } = require("./middleware/auth.js");
 const { fatalError } = require("../util/error.js");
 const { adminRemove } = require("./route/adminRemove.js");
@@ -30,18 +30,18 @@ const router = express.Router();
 // private route
 router.post("/register", register);
 router.post("/login", login);
-router.get("/profile", authToken, user, profile);
-router.post("/profile", authToken, user, update);
-router.post("/delete", authToken, user, remove);
+router.get("/profile", authToken, getUser, profile);
+router.post("/profile", authToken, getUser, update);
+router.post("/delete", authToken, getUser, remove);
 router.post("/validate-email", authToken, verifyEmail)
-router.get("/request-email-verification-code", authToken, user, sendEmailVerificationCode)
+router.get("/request-email-verification-code", authToken, getUser, sendEmailVerificationCode)
 
 // admin route
-router.post("/admin/update/:puid", authToken, user, adminSetPuid, adminUpdate)
-router.get("/admin/profile/:puid", authToken, user, adminSetPuid, user, adminProfile);
-router.get("/admin/delete/:puid", authToken, user, adminSetPuid, user, adminRemove);
+router.post("/admin/update/:puid", authToken, getUser, adminSetPuid, adminUpdate)
+router.get("/admin/profile/:puid", authToken, getUser, adminSetPuid, getUser, adminProfile);
+router.get("/admin/delete/:puid", authToken, getUser, adminSetPuid, getUser, adminRemove);
 
 // public route
-router.get("/profile/:puid", publicSetPuid, user, publicProfile);
+router.get("/profile/:puid", publicSetPuid, getUser, publicProfile);
 
 module.exports = router;

@@ -20,7 +20,7 @@
 const pool = require("../../database/pool.js");
 const { handleErrors } = require("../../util/error.js");
 const { propertyChecker } = require("../../util/propertyChecker.js");
-const { tableName } = require("../database.js");
+const { tableName } = require("../database/user.js");
 
 exports.verifyEmail = async (req, res, _next) => {
   try {

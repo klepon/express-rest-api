@@ -8,12 +8,12 @@
     "username": string
     "email_validation": number, 1 === valid
     "is_blocked": boolean
-    "role": string
     "avatar_id": number | null
     "bio": string | null
     "address": string | null
     "latlng": string | null
     "puid": string
+    "permission": json
   }
 * return code, body
 * 404, User not found
@@ -22,11 +22,11 @@
 
 const pool = require("../../database/pool.js");
 const { debugError } = require("../../util/error.js");
-const { tableName } = require("../database.js");
+const { tableUser } = require("../constant.js");
 
-exports.user = async (req, res, next) => {
+exports.getUser = async (req, res, next) => {
   try {
-    const query = "SELECT * FROM " + tableName + " WHERE puid = $1";
+    const query = `SELECT * FROM ${tableUser} WHERE puid = $1`;
     const result = await pool.query(query, [req.userPuid]);
 
     if (result.rowCount !== 1) {

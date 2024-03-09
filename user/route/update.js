@@ -27,7 +27,7 @@
 const pool = require("../../database/pool.js");
 const { propertyChecker } = require("../../util/propertyChecker.js");
 const { handleErrors } = require("../../util/error.js");
-const { tableName } = require("../database.js");
+const { tableName } = require("../database/user.js");
 const { generateRandomNumber } = require("../util.js");
 
 exports.update = async (req, res, _next) => {

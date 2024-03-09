@@ -8,7 +8,7 @@
  */
 
 const pool = require("../../database/pool.js");
-const { tableName } = require("../database.js");
+const { tableName } = require("../database/user.js");
 const { debugError } = require("../../util/error.js");
 const { deletedUid } = require("../../util/constant.js");
 

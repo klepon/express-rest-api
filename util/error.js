@@ -9,7 +9,7 @@ exports.fatalError = (message, description) => {
 exports.debugError = (error) => {
   if (process.env.DEBUG_ERROR_REST_API === "true") {
     console.error(
-      '==== debugError active, set DEBUG_ERROR_REST_API="false" to turn off ===='
+      '\n=====================================\ndebugError active, set DEBUG_ERROR_REST_API="false" to turn off\n=====================================\n'
     );
     console.error("=== error: ", error);
   }

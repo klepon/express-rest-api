@@ -1,4 +1,5 @@
 const pool = require("../database/pool.js");
+const { debugError } = require("../util/error.js");
 const { tableRole, tablePermission } = require("./constant.js");
 
 // const generatePermission = (data) => {
@@ -11,28 +12,49 @@ const { tableRole, tablePermission } = require("./constant.js");
 //   });
 // };
 
-exports.getRoleID = async (name) => {
-  const rs = await pool.query(`SELECT rid FROM ${tableRole} WHERE name = $1`, [
-    name,
-  ]);
-  if (rs.rowCount === 0) return "";
-  return rs.rows[0].rid;
+exports.getRoleID = async (roleNames) => {
+  try {
+    return await pool.query(
+      `SELECT rid FROM ${tableRole} WHERE name = ANY($1)`,
+      [roleNames]
+    );
+  } catch (e) {
+    debugError(e);
+    return [];
+  }
 };
 
-exports.getPermissionID = async (permission) => {
-  const rs = await pool.query(
-    `SELECT pid FROM ${tablePermission} WHERE permission = $1`,
-    [permission]
-  );
-  if (rs.rowCount === 0) return "";
-  return rs.rows[0].pid;
+exports.getPermissionIDs = async (permissionNames) => {
+  try {
+    return await pool.query(
+      `SELECT pid FROM ${tablePermission} WHERE permission = ANY($1)`,
+      [permissionNames]
+    );
+  } catch (e) {
+    debugError(e);
+    return [];
+  }
 };
 
-// exports.getPermissionByIds = async (ids) => {
-//   const rs = await pool.query(
-//     `SELECT * FROM ${tableName} WHERE rid = ANY($1)`,
-//     [ids]
-//   );
-//   if (rs.rowCount === 0) return "";
-//   return generatePermission(rs.rows);
-// };
+/**
+ * check user permission, resturn res or continue
+ * @param {*} user
+ * [c-d-:post:fuid1, c-d-:post:fui2] or any id provide by caller
+ * @param {*} permission
+ * service permissionie: -r--:post:fuid
+ * @param {*} res
+ * from express
+ */
+exports.checkPermission = (user, permission, res) => {
+  if (user.includes("crud:*")) return;
+
+  const part2 = permission.substring(4);
+  const userPermission = user.find((u) => u.substring(4) === part2) || "----:";
+
+  const pattern = permission.substring(0, 4);
+  const regexPattern = pattern.replace(/-/g, ".");
+  const regex = new RegExp(regexPattern);
+  if (!regex.test(userPermission.substring(0, 4))) {
+    res.status(401).send("Access denied");
+  }
+};

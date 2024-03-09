@@ -22,9 +22,8 @@ const bcrypt = require("bcrypt");
 const pool = require("../../database/pool.js");
 const { propertyChecker } = require("../../util/propertyChecker.js");
 const { handleErrors } = require("../../util/error.js");
-const { tableName } = require("../database.js");
 const { generateRandomNumber } = require("../util.js");
-const { Role } = require("../constant.js");
+const { tableUser } = require("../constant.js");
 
 exports.register = async (req, res, _next) => {
   try {
@@ -38,16 +37,12 @@ exports.register = async (req, res, _next) => {
 
     const { display_name, email, username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const query =
-      "INSERT INTO " +
-      tableName +
-      " (display_name, email, username, password, role, email_validation) VALUES ($1, $2, $3, $4, $5, $6)";
+    const query = `INSERT INTO ${tableUser} (display_name, email, username, password, email_validation) VALUES ($1, $2, $3, $4, $5)`;
     await pool.query(query, [
       display_name,
       email,
       username,
       hashedPassword,
-      Role.user,
       generateRandomNumber(),
     ]);
     res.status(201).send("User registered successfully");
