@@ -6,8 +6,8 @@ const dbPORT = process.env.DB_PORT || 5432;
 const pool = new Pool({
   user: process.env.DB_USER,
   host: "localhost",
-  database: "template1",
-  password: "",
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASS,
   port: dbPORT,
 });
 

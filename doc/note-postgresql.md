@@ -11,17 +11,21 @@ Or, if you don't want/need a background service you can just run:
   `/usr/local/opt/postgresql@14/bin/postgres -D /usr/local/var/postgresql@14`  
 
 ## akses db
+buat database  
+`$ createdb -U username database_name` tanpa password  
+`$ createdb -U username -W nama_database` dengan password  
+
 dengan user/pass jika telah membuat  
 `$ psql -U username -d database_name`
 
-tanpa user/pass  
-`$ psql -U an*****di** -d postgres`
+masuk ke db postgres untuk lihat semua db  
+`$ psql -U an*****di** -d postgres`  
+`# \l`  
 
 ### perintah dalam server/postgres (#)
 pastikan sudah melakukan akses terlebih dahulu  
 `# \q` keluar dari server
 `# \l` list database  
-`# CREATE DATABASE database_name` buat database  
 `# \c db_name` masuk ke db  
 `# \dt` list table  
 `# CREATE TABLE users (

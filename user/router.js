@@ -30,10 +30,10 @@ const router = express.Router();
 // private route
 router.post("/register", register);
 router.post("/login", login);
+router.get("/profile", authToken, user, profile);
 router.post("/profile", authToken, user, update);
 router.post("/delete", authToken, user, remove);
 router.post("/validate-email", authToken, verifyEmail)
-router.get("/profile", authToken, user, profile);
 router.get("/request-email-verification-code", authToken, user, sendEmailVerificationCode)
 
 // admin route
