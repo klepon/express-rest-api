@@ -18,7 +18,9 @@ const createTableQuery = `
     avatar_id INTEGER,
     bio VARCHAR(255),
     address VARCHAR(255),
-    latlng VARCHAR(30)
+    latlng VARCHAR(30),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    timezone CHAR(3)
   )
 `;
 

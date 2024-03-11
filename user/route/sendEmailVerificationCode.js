@@ -17,7 +17,7 @@ const { maskEmail } = require("../../util/maskEmail.js");
 
 exports.sendEmailVerificationCode = async (req, res, next) => {
   try {
-    if (req.userData && req.userData.email_validation != 1) {
+    if (req.userData && req.userData.email_validation != 1 && !req.userData.is_blocked) {
       sendEmail(
         req.userData.email,
         "Email verification code",

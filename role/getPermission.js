@@ -1,3 +1,5 @@
+const { throwErrorMessage } = require("../util/error");
+
 // const generatePermission = (data) => {
 //   return data.map((role) => {
 //     const roles = [];
@@ -9,24 +11,27 @@
 // };
 
 /**
- * check user permission, resturn res or continue
- * @param {*} user
- * [c-d-:post:fuid1, c-d-:post:fui2] or any id provide by caller
- * @param {*} permission
- * service permissionie: -r--:post:fuid
- * @param {*} res
- * from express
+ * check user permission
+ * throw 401, Unauthorized
+ * @param array user
+ * [c-u-:post:uuid1, c-u-:post:uuid2, c-d-:post:*], * match all uuid
+ * @param string permission
+ * service permissionie: --u-:post:uuid, current any public id using uuid-v4
  */
-exports.checkPermission = (user, permission, res) => {
+exports.checkPermission = (user, permission) => {
+  if (!user || user.lenth === 0) throwErrorMessage(401);
   if (user.includes("crud:*")) return;
 
-  const part2 = permission.substring(4);
-  const userPermission = user.find((u) => u.substring(4) === part2) || "----:";
+  const hasPermission = user.find((u) => {
+    const pattern = u
+      .replace(/-/g, ".")
+      .replace(
+        /\*/g,
+        "(\\*|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})"
+      );
+    const regex = new RegExp(pattern);
+    return regex.test(permission);
+  });
 
-  const pattern = permission.substring(0, 4);
-  const regexPattern = pattern.replace(/-/g, ".");
-  const regex = new RegExp(regexPattern);
-  if (!regex.test(userPermission.substring(0, 4))) {
-    res.status(401).send("Access denied");
-  }
+  if (!hasPermission) throwErrorMessage(401);
 };

@@ -1,4 +1,10 @@
-/** my profile
+/** 
+ * get user data
+ *
+ * required:
+ * permission: -r--:USER:{puid}; USER:{ME}, USER:*
+ * req.userData: { puid: uuid-v4, permission: [string] }
+ * 
 * use: auth
 * update req.userData = {
     "uid": uuid

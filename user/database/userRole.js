@@ -1,14 +1,10 @@
 const pool = require("../../database/pool.js");
-const {
-  roles,
-  tableRole,
-} = require("../../role/constant.js");
+const { roles, tableRole } = require("../../role/constant.js");
 const { tableUserRole, tableUser } = require("../constant.js");
 const { checkTableQuery } = require("../../util/constant.js");
 
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS ${tableUserRole} (
-    urid SERIAL PRIMARY KEY,
     uid INTEGER NOT NULL,
     rid INTEGER NOT NULL
   )
@@ -27,6 +23,7 @@ const assignSuperAdminRole = async () => {
 const createTable = async () => {
   try {
     await pool.query(createTableQuery);
+    await pool.query(`CREATE INDEX idx_urid ON ${tableUserRole} (uid);`);
     console.log(`* ${tableUserRole}: table created successfully`);
 
     await assignSuperAdminRole();

@@ -6,9 +6,12 @@ exports.roles = {
   admin: "Admin",
   user: "User",
 };
+/**
+ * "*" pass all permission
+ */
 exports.permissions = {
   superAdmin: "*",
-  userAdmin: "USER:ADMIN",
+  userAdmin: "USER:*",
   userMe: "USER:{ME}",
   userFriend: "USER:{FRIEND}",
   userGroup: "USER:{GROUP}",

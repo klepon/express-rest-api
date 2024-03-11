@@ -14,11 +14,12 @@ const { tableName } = require("../database/user.js");
 const { debugError } = require("../../util/error.js");
 const { deletedUid } = require("../../util/constant.js");
 const { propertyChecker } = require("../../util/propertyChecker.js");
+const { tableUser } = require("../constant.js");
 
 exports.remove = async (req, res, _next) => {
   try {
     propertyChecker(req.body, ["password"]);
-    
+
     if (req.userData) {
       const validPassword = await bcrypt.compare(
         req.body.password,
@@ -33,7 +34,7 @@ exports.remove = async (req, res, _next) => {
 
       // execute delete user
       const result = await pool.query(
-        "DELETE FROM " + tableName + " WHERE uid = $1",
+        `DELETE FROM ${tableUser} WHERE uid = $1 AND is_blocked = 'f'`,
         [req.userData.uid]
       );
       res.status(200).json(result.rowCount);

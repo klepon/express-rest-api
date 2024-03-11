@@ -9,33 +9,31 @@
 
 const bcrypt = require("bcrypt");
 const pool = require("../../database/pool.js");
-const { handleErrors } = require("../../util/error.js");
+const { throwError, debugError } = require("../../util/error.js");
 const { createJwtToken } = require("../middleware/auth.js");
-const { propertyChecker } = require("../../util/propertyChecker.js");
 const { tableUser } = require("../constant.js");
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   try {
-    propertyChecker(req.body, ["username", "password"]);
-
     const { username, password } = req.body;
     const query = `SELECT password, puid FROM ${tableUser} WHERE username = $1`;
     const result = await pool.query(query, [username]);
 
-    if (result.rows.length === 0) {
-      return res.status(401).send("Invalid user or password");
+    if (!result.rows.length) {
+      throw throwError(401);
     }
 
     const user = result.rows[0];
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return res.status(401).send("Invalid user or password");
+      throw throwError(401);
     }
 
     const token = createJwtToken({ puid: user.puid });
     res.status(200).json({ token });
   } catch (error) {
-    handleErrors(error, res, 500);
+    debugError(error, "* User: login catch block");
+    next(error);
   }
 };

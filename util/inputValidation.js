@@ -1,10 +1,12 @@
+const { throwError, debugErrorLine } = require("./error");
+
 /**
  * alphanumeric
  * [_-]
  * VALIDATION_USERNAME_MIN_CHAR || 8
  * max char 50
  */
-exports.userName = (text) => {
+const userName = (text) => {
   const minLength = process.env.VALIDATION_USERNAME_MIN_CHAR || 8;
   const regexString = `^[a-zA-Z0-9_-]{${minLength},50}$`;
   const regex = new RegExp(regexString);
@@ -20,7 +22,7 @@ exports.userName = (text) => {
  * VALIDATION_USERNAME_MIN_CHAR || 4
  * max char 50
  */
-exports.displayName = (text) => {
+const displayName = (text) => {
   const minLength = process.env.VALIDATION_DISPLAYNAME_MIN_CHAR || 4;
   const regexString = `^[a-zA-Z0-9\\s_-]{${minLength},50}$`;
   const regex = new RegExp(regexString);
@@ -44,7 +46,7 @@ exports.displayName = (text) => {
  * end with min 2 alpha
  * max char 100
  */
-exports.email = (text) => {
+const email = (text) => {
   const allowedSpecialCharInEmail =
     process.env.VALIDATION_EMAIL_ALLOWED_SPECIAL_CHAR_IN_EMAIL || "+-_";
   const allowedSpecialCharInDomain =
@@ -53,7 +55,7 @@ exports.email = (text) => {
     1 + (process.env.VALIDATION_EMAIL_MAX_SUB_DOMAIN_DEEP || 1);
   const regexString = `^[a-zA-Z0-9]{2,}(?:[${allowedSpecialCharInEmail}]{0,1}[a-zA-Z0-9]+)*@(?:[a-zA-Z0-9]+(?:[${allowedSpecialCharInDomain}]{0,1}[a-zA-Z0-9]+)*\\.){1,${maxSubDomainDeep}}[a-zA-Z]{2,}$`;
   const regex = new RegExp(regexString);
-  if (!regex.test(text) && text.length > 100) {
+  if (!regex.test(text) || text.length > 100) {
     return false;
   }
   return true;
@@ -64,7 +66,7 @@ exports.email = (text) => {
  * min char VALIDATION_PASSWORD_MIN_CHAR || 8
  * max char 255
  */
-exports.password = (text) => {
+const password = (text) => {
   const minLength = process.env.VALIDATION_PASSWORD_MIN_CHAR || 8;
   const regexString = `^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_\\-])[a-zA-z0-9!@#$%^&*()_\\-]{${minLength},255}$`;
   const regex = new RegExp(regexString);
@@ -78,7 +80,7 @@ exports.password = (text) => {
  * alphanumeric, [\s.,-]]
  * max char 255
  */
-exports.bio = (text) => {
+const bio = (text) => {
   return /^[a-zA-Z0-9\s.,-]{1, 255}$/.test(text);
 };
 
@@ -86,7 +88,7 @@ exports.bio = (text) => {
  * alphanumeric, [\s.,]]
  * max char 255
  */
-exports.address = (text) => {
+const address = (text) => {
   return /^[a-zA-Z0-9\s.,]{1, 255}$/.test(text);
 };
 
@@ -94,14 +96,14 @@ exports.address = (text) => {
  * float,float
  * max char 30
  */
-exports.latlng = (text) => {
+const latlng = (text) => {
   return /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/.test(text) && text.length <= 30;
 };
 
 /**
  * 6 digit number
  */
-exports.code = (text) => {
+const code = (text) => {
   return /^[0-9]{6,6}$/.test(text);
 };
 
@@ -110,11 +112,89 @@ exports.code = (text) => {
  * end with uppercase
  * max char 100
  */
-exports.permission = (text) => {
-  const regexString = `^[A-Z]+(?::([A-Z]+|\\{[A-Z]+\\}))*$`;
-  const regex = new RegExp(regexString);
-  if (!regex.test(text) && text.length > 100) {
+const permission = (text) => {
+  const regex = /^[A-Z]+(?::([A-Z]+|\\{[A-Z]+\\}))*$/;
+  if (!regex.test(text) || text.length > 100) {
     return false;
   }
   return true;
+};
+
+const uuidv4 = (text) => {
+  return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+    text
+  );
+};
+
+const validate = (check, text) => {
+  switch (check) {
+    case "display_name":
+    case "name":
+      return displayName(text);
+    case "username":
+      return userName(text);
+    case "email":
+      return email(text);
+    case "password":
+      return password(text);
+    case "is_blocked":
+      return typeof text === "boolean";
+    case "avatar_id":
+    case "uid":
+      return Number.isInteger(text);
+    case "bio":
+      return bio(text);
+    case "address":
+      return address(text);
+    case "latlng":
+      return latlng(text);
+    case "code":
+      return code(text);
+    case "permission":
+      return permission(text);
+    case "puid":
+      return uuidv4(text);
+  }
+  return true;
+};
+
+/**
+ * check missing and invalid property
+ * 
+ * required: 
+ * object req.inputToValidate
+ * array req.reqInputProps
+ * 
+ * response:
+ * next()
+ * 400
+ * {
+    "detail": "Missing property or invalid value",
+    "missing": [coloumn_name]
+    "invalids": [coloumn_name]
+  }
+ */
+exports.inputValidation = (req, _res, next) => {
+  const missing = [];
+  const invalid = [];
+  for (const prop of req.reqInputProps) {
+    const { [prop]: value = null } = req.inputToValidate;
+    if (value === null || value === undefined) {
+      missing.push(prop);
+    }
+    if (!validate(prop, req.inputToValidate[prop])) {
+      invalid.push(prop);
+    }
+  }
+
+  if (missing.length > 0 || invalid.length > 0) {
+    debugErrorLine("inputValidation", { missing, invalid });
+    throw throwError(
+      400,
+      "Missing property or invalid value",
+      missing,
+      invalid
+    );
+  }
+  next();
 };

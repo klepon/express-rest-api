@@ -20,16 +20,14 @@
 const pool = require("../../database/pool.js");
 const { handleErrors } = require("../../util/error.js");
 const { propertyChecker } = require("../../util/propertyChecker.js");
+const { tableUser } = require("../constant.js");
 const { tableName } = require("../database/user.js");
 
 exports.verifyEmail = async (req, res, _next) => {
   try {
     propertyChecker(req.body, ["code"]);
-    
-    const query =
-      "UPDATE " +
-      tableName +
-      " SET email_validation = $1 WHERE puid = $2 AND email_validation = $3";
+
+    const query = `UPDATE ${tableUser} SET email_validation = $1 WHERE puid = $2 AND email_validation = $3 AND is_blocked = 'f'`;
     const value = [1, req.userPuid, req.body.code];
     const result = await pool.query(query, value);
 

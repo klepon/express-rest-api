@@ -29,9 +29,7 @@ const createTable = async () => {
     console.log(`* ${tableRole}: table created successfully`);
 
     await insertDefault();
-    console.log(
-      `* ${tableRole}: roles created successfully \n`
-    );
+    console.log(`* ${tableRole}: roles created successfully \n`);
   } catch (error) {
     console.error(`** Error creating table ${tableRole}:`, error);
   }

@@ -9,7 +9,6 @@ const {
 
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS ${tableRolePermission} (
-    rpid SERIAL PRIMARY KEY,
     rid INTEGER NOT NULL,
     pid INTEGER NOT NULL
   )
@@ -48,6 +47,7 @@ const insertDefault = async () => {
 exports.createTableRolePermission = async () => {
   try {
     await pool.query(createTableQuery);
+    await pool.query(`CREATE INDEX idx_rpid ON ${tableRolePermission} (rid);`)
     console.log(`* ${tableRolePermission}: table created successfully`);
 
     await insertDefault();
