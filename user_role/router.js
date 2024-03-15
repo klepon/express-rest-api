@@ -11,6 +11,7 @@ const { assignRole } = require("./middleware/roleAssignToUser");
 const { removeUser } = require("./middleware/userDelete");
 const { login } = require("./route/userLogin");
 const { register } = require("./route/userRegister");
+const { profile } = require("./route/profile");
 
 // check envar for jwt token
 if (process.env.LOGIN_JWT_SECRET.length < 512) {
@@ -36,7 +37,7 @@ router.post(
   register
 );
 router.post("/login", inputLogin, inputValidation, login);
-// router.get("/profile", authToken, getUser, profile);
+router.get("/profile", authToken, getUser, profile);
 // router.post("/profile", authToken, getUser, update);
 // router.post("/delete", authToken, getUser, remove);
 // router.post("/validate-email", authToken, verifyEmail)

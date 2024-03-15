@@ -18,11 +18,15 @@
 * 500, Internal Server Error
 */
 
-const { debugError } = require("../util/error.js");
-const { filterObject } = require("../util/filterObject.js");
+const { debugError, throwError } = require("../../util/error.js");
+const { filterObject } = require("../../util/filterObject.js");
 
 exports.profile = async (req, res, next) => {
   try {
+    if (req.userData && req.userData.is_blocked) {
+      next(throwError(403));
+    }
+
     if (req.userData) {
       const privateData = [
         "display_name",
@@ -36,11 +40,13 @@ exports.profile = async (req, res, next) => {
         "address",
         "latlng",
         "puid",
+        "created_at",
+        "timezone",
       ];
       res.status(200).json(filterObject(req.userData, privateData));
     }
   } catch (error) {
-    debugError(error);
-    res.status(500).send("Internal Server Error");
+    debugError(error, "my profile");
+    next(throwError(500));
   }
 };

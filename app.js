@@ -24,9 +24,7 @@ app.use("/user", userRouter);
 (async () => {
   await createTableRole();
   await createTableUser();
-  console.log(
-    `===== table setup done\nREST API ready to use on port ${PORT}\n`
-  );
+  console.log(`\n`);
 })();
 
 // handle error

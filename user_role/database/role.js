@@ -42,21 +42,21 @@ exports.createTableRole = async () => {
       if (process.env.RECREATE_ALL_TABLE === "true") {
         await pool.query(`DROP TABLE IF EXISTS ${table.role}`);
         await createTable();
-      } else console.log(`* ${table.role}: exist`);
+      } else console.log(`\u2713 Table ${table.role} check`);
     } else await createTable();
 
     if (permission.rows[0].exists) {
       if (process.env.RECREATE_ALL_TABLE === "true") {
         await pool.query(`DROP TABLE IF EXISTS ${table.permission}`);
         await createTablePermission();
-      } else console.log(`* ${table.permission}: exist`);
+      } else console.log(`\u2713 Table ${table.permission} check`);
     } else await createTablePermission();
 
     if (rolePermission.rows[0].exists) {
       if (process.env.RECREATE_ALL_TABLE === "true") {
         await pool.query(`DROP TABLE IF EXISTS ${table.rolePermission}`);
         await createTableRolePermission();
-      } else console.log(`* ${table.rolePermission}: exist`);
+      } else console.log(`\u2713 Table ${table.rolePermission} check`);
     } else await createTableRolePermission();
   } catch (error) {
     console.error(`** Error checking table role:`, error);

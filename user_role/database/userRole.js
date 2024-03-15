@@ -19,7 +19,7 @@ const assignSuperAdminRole = async () => {
   await pool.query(query, [roles.superAdmin, roles.superAdmin]);
 };
 
-const createTable = async () => {
+exports.createTableUserRole = async () => {
   try {
     await pool.query(createTableQuery);
     await pool.query(`CREATE INDEX idx_urid ON ${table.userRole} (uid);`);
@@ -29,22 +29,5 @@ const createTable = async () => {
     console.log(`* ${table.userRole}: ${roles.superAdmin} role assigned \n`);
   } catch (error) {
     console.error(`** Error creating table ${table.userRole}:`, error);
-  }
-};
-
-exports.createTableUserRole = async () => {
-  try {
-    const result = await pool.query(checkTableQuery, [table.userRole]);
-
-    if (result.rows[0].exists) {
-      if (process.env.RECREATE_ALL_TABLE === "true") {
-        await pool.query(`DROP TABLE IF EXISTS ${table.userRole};`);
-        await createTable();
-      } else console.log(`* ${table.userRole}: exist`);
-    } else {
-      await createTable();
-    }
-  } catch (error) {
-    console.error(`** Error checking table ${table.userRole}:`, error);
   }
 };

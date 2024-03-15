@@ -58,14 +58,14 @@ exports.createTableUser = async () => {
       if (process.env.RECREATE_ALL_TABLE === "true") {
         await pool.query(`DROP TABLE IF EXISTS ${table.user}`);
         await createTable();
-      } else console.log(`* ${table.user}: exist`);
+      } else console.log(`\u2713 Table ${table.user} check`);
     } else await createTable();
 
     if (userRole.rows[0].exists) {
       if (process.env.RECREATE_ALL_TABLE === "true") {
         await pool.query(`DROP TABLE IF EXISTS ${table.userRole}`);
         await createTableUserRole();
-      } else console.log(`* ${table.userRole}: exist`);
+      } else console.log(`\u2713 Table ${table.userRole} check`);
     } else await createTableUserRole();
   } catch (error) {
     console.error(`** Error checking table ${table.user}:`, error);
