@@ -3,11 +3,11 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const userRouter = require("./user/router.js");
-const { createTableRole } = require("./role/database/role.js");
+const userRouter = require("./user_role/router.js");
 const { removeMediaOnDeleteUser } = require("./mediaUploader/onDeleteUser.js");
-const { createTableUser } = require("./user/database/user.js");
 const { setErrorCode, debugError } = require("./util/error.js");
+const { createTableRole } = require("./user_role/database/role.js");
+const { createTableUser } = require("./user_role/database/user.js");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
