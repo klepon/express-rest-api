@@ -41,6 +41,7 @@ const formatError = (code, error) => {
   data.resCode = error.status || error.resCode || code;
   if (error.from) data.from = error.from;
   if (error.type) data.type = error.type;
+  if (error.code) data.code = error.code;
   if (error.missings) data.missings = error.missings;
   if (error.invalids) data.invalids = error.invalids;
 
