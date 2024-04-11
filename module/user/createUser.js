@@ -5,7 +5,8 @@
  * object req.body
  * 
  * response:
- * next()
+ * 200 success
+ * /utis/inputValidation.js error
  * 500, { "detail": default 500 message }
  * 500, {
   "code": "23505",

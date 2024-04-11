@@ -7,7 +7,7 @@
     username: string, 
     password: string 
  }
- * response:
+ * passing:
  * object req.inputToValidate
  * array req.reqInputProps
  */

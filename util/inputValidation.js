@@ -170,7 +170,7 @@ const validate = (check, text) => {
  * 400
  * {
     "detail": "Missing property or invalid value",
-    "missing": [coloumn_name]
+    "missings": [coloumn_name]
     "invalids": [coloumn_name]
   }
  */
