@@ -23,49 +23,46 @@ exports.fatalError = (message, description) => {
   process.exit(1);
 };
 
-exports.debugError = (error) => {
+exports.debugErrorLine = (title, message) => {
+  if (process.env.DEBUG_ERROR_REST_API === "true") {
+    console.log("====== ", title);
+    if (message) console.log(message);
+  }
+};
+
+exports.debugError = (error, description, skip = false) => {
+  if (skip) return;
+
   if (process.env.DEBUG_ERROR_REST_API === "true") {
     console.error(
-      `kasih warna ${error.from} \n=====================================`
+      `* Debuging error active, set DEBUG_ERROR_REST_API="false" to turn off\n* ${description}\n=====================================`
     );
-    delete error.from
     console.error(error);
     console.error("\n=== End debuging error ===\n");
   }
 };
 
 // formating detail error like validation
-const formatError = (code, error) => {
+const formatError = (code, error, detail, missings = null, invalids = null) => {
   const data = {};
-  data.detail = error.detail || defaultErrorMessage(code);
+  data.resCode = code;
+  data.detail = error.detail || detail || defaultErrorMessage(code);
 
   if (error.code) data.code = error.code;
   if (error.type) data.type = error.type;
-  if (error.missings) data.missings = error.missings;
-  if (error.invalids) data.invalids = error.invalids;
+  if (missings) data.missings = missings;
+  if (invalids) data.invalids = invalids;
 
   return data;
 };
 
-exports.throwError = (code, from, error) => {
-  if (typeof error === "Error") {
-    return formatError(code, error);
-  }
+// create error for non try catch callerand format it
+exports.throwError = (code, detail, missings, invalids) => {
+  const error = new Error("from throwError() =========");
+  return formatError(code, error, detail, missings, invalids);
+};
 
-  const newError = new Error("====== kasih warna " + from);
-  newError.from = from;
-
-  switch (typeof error) {
-    case "string":
-      newError.detail = error;
-      break;
-    case "object":
-      newError = {
-        ...newError,
-        ...error,
-      };
-      break;
-  }
-
-  throw formatError(code, newError);
+// set error code and format it
+exports.setErrorCode = (code, error) => {
+  return formatError(code, error);
 };
