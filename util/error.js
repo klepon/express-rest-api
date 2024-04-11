@@ -12,6 +12,8 @@ const defaultErrorMessage = (code) => {
       return "Internal Server Error";
     case 503:
       return "Service Unavailable";
+    default:
+      return "unknown error";
   }
 };
 
