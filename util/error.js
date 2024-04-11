@@ -25,12 +25,11 @@ exports.fatalError = (message, description) => {
 
 exports.debugError = (error) => {
   if (process.env.DEBUG_ERROR_REST_API === "true") {
-    console.error(
-      `kasih warna ${error.from} \n=====================================`
-    );
-    delete error.from
+    console.error("")
+    console.error("\x1b[1m\x1b[31m%s\x1b[0m", `Error ${error.from}:`);
+    delete error.from;
     console.error(error);
-    console.error("\n=== End debuging error ===\n");
+    console.error("============\n");
   }
 };
 

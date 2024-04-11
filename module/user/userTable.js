@@ -38,14 +38,13 @@ const insertAdminUser = async () => {
 const createTable = async () => {
   try {
     await pool.query(createTableQuery);
-    console.log(`* ${table.user}: table created successfully`);
+    console.log(`\u2713 Table ${table.user} created successfully`);
 
     await insertAdminUser();
-    console.log(
-      `* ${table.user}: Super User created successfully \n`
-    );
+    console.log(`\u2713 Super User created successfully \n`);
   } catch (error) {
-    console.error(`** Error creating table ${table.user}:`, error);
+    error.from = `Creating table ${table.user}`;
+    debugError(error)
   }
 };
 
@@ -60,7 +59,7 @@ exports.userTable = async () => {
       } else console.log(`\u2713 Table ${table.user} check`);
     } else await createTable();
   } catch (error) {
-    error.from = "create tabel user"
-    debugError(error)
+    error.from = "Checking tabel user";
+    debugError(error);
   }
 };

@@ -24,7 +24,6 @@ app.use("/user", userRouter);
 // create table
 (async () => {
   await userTable();
-  console.log(`\n`);
 })();
 
 // handle error
@@ -35,5 +34,5 @@ app.use((error, _req, res, _next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`\nServer is running on port ${PORT}`);
 });
