@@ -164,9 +164,12 @@ const validate = (check, text) => {
  * required: 
  * object req.inputToValidate
  * array req.reqInputProps
+ * array optionalInputProps optional
+ * 
+ * passing:
+ * req.cleanData
  * 
  * response:
- * next()
  * 400
  * {
     "detail": "Missing property or invalid value",
@@ -177,18 +180,28 @@ const validate = (check, text) => {
 exports.inputValidation = (req, _res, next) => {
   const missings = [];
   const invalids = [];
+  const data = {};
+  const optional = req.optionalInputProps || [];
   for (const prop of req.reqInputProps) {
     const { [prop]: value = null } = req.inputToValidate;
-    if (value === null || value === undefined) {
+
+    if ((value === null || value === undefined) && !optional.includes(prop)) {
       missings.push(prop);
-    }
-    if (!validate(prop, req.inputToValidate[prop])) {
+    } else if (
+      !(value === null || value === undefined) &&
+      !validate(prop, value)
+    ) {
       invalids.push(prop);
+    } else {
+      // todo: sanitize prop before added to data
+      data[prop] = value;
     }
   }
 
   if (missings.length > 0 || invalids.length > 0) {
     throwError(400, "Input validation", { missings, invalids });
   }
+
+  req.cleanData = data;
   next();
 };

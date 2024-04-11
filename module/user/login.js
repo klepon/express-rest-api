@@ -1,7 +1,10 @@
 /** login, see input validation for body value
- * POST
- * body { username: string, password: string }
- * return code, body:
+ * 
+ * required: 
+ * object req.cleanData from ./registerData.js
+ * 
+ * response
+ * /utis/inputValidation.js error
  * 200, { token: string }
  * 401, Invalid user or password
  * 500, Internal Server Error

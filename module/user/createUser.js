@@ -2,7 +2,7 @@
  * create user record
  * 
  * required: 
- * object req.body
+ * object req.cleanData from ./registerData.js
  * 
  * response:
  * 200 success
@@ -23,7 +23,7 @@ const { table } = require("./constant");
 
 exports.createUser = async (req, res, next) => {
   try {
-    const { display_name, email, username, password } = req.body;
+    const { display_name, email, username, password } = req.cleanData;
     const hashedPassword = await bcrypt.hash(password, 10);
     const query = `INSERT INTO ${table.user} (display_name, email, username, password, email_validation) VALUES ($1, $2, $3, $4, $5)`;
     const result = await pool.query(query, [

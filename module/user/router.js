@@ -7,6 +7,8 @@ const { login } = require("./login");
 const { authToken } = require("./auth");
 const { readUser } = require("./readUser");
 const { profile } = require("./profile");
+const { updateUser } = require("./updateUser");
+const { updateData } = require("./updateData");
 
 // check envar for jwt token
 if (process.env.LOGIN_JWT_SECRET.length < 512) {
@@ -22,7 +24,8 @@ const userRouter = express.Router();
 
 // private route
 userRouter.post("/register", registerData, inputValidation, createUser);
-userRouter.post("/login", loginData, inputValidation, login)
+userRouter.post("/login", loginData, inputValidation, login);
 userRouter.get("/profile", authToken, readUser, profile);
+userRouter.post("/profile", updateData, inputValidation, authToken, readUser, updateUser);
 
 module.exports = userRouter;

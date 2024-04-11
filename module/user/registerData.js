@@ -1,5 +1,6 @@
 /** 
  * required input properties for register user
+ * 
  * POST
  * body { 
     display_name: string, 

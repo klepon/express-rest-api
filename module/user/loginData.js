@@ -1,5 +1,6 @@
 /** 
  * required input properties for login
+ * 
  * POST
  * body { 
     username: string, 
