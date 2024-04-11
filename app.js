@@ -8,7 +8,7 @@ const userRouter = require("./module/user/router.js");
 
 const { userTable } = require("./module/user/userTable.js");
 
-const { debugError, throwError } = require("./util/error.js");
+const { debugError, newError } = require("./util/error.js");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,8 +28,18 @@ app.use("/user", userRouter);
 
 // handle error
 app.use((error, _req, res, _next) => {
-  const responseError = error.code ? error : throwError(500, "handle error", error)
-  debugError(responseError);
+  const errorFrom = error;
+  if (!error.from) {
+    errorFrom.from = "Handle error";
+  }
+  debugError(error.from ? error : errorFrom);
+
+  const code = error.resCode || 500;
+  const responseError = error.resCode
+    ? error
+    : newError(code, "Handle error", error);
+  delete responseError.resCode;
+  delete responseError.from;
   res.status(code).json(responseError);
 });
 

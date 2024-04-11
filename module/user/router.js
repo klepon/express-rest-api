@@ -2,7 +2,6 @@ const express = require("express");
 const { registerData } = require("./registerData");
 const { inputValidation } = require("../../util/inputValidation");
 const { createUser } = require("./createUser");
-const { registerResponse } = require("./registerResponse");
 
 // check envar for jwt token
 if (process.env.LOGIN_JWT_SECRET.length < 512) {
@@ -17,12 +16,6 @@ if (process.env.LOGIN_JWT_SECRET.length < 512) {
 const userRouter = express.Router();
 
 // private route
-userRouter.post(
-  "/register",
-  registerData,
-  inputValidation,
-  createUser,
-  registerResponse
-);
+userRouter.post("/register", registerData, inputValidation, createUser);
 
 module.exports = userRouter;

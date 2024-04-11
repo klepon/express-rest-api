@@ -25,20 +25,21 @@ exports.fatalError = (message, description) => {
 
 exports.debugError = (error) => {
   if (process.env.DEBUG_ERROR_REST_API === "true") {
-    console.error("")
+    console.error("");
     console.error("\x1b[1m\x1b[31m%s\x1b[0m", `Error ${error.from}:`);
     delete error.from;
     console.error(error);
-    console.error("============\n");
+    console.error("----------\n");
   }
 };
 
 // formating detail error like validation
 const formatError = (code, error) => {
   const data = {};
-  data.detail = error.detail || defaultErrorMessage(code);
-
-  if (error.code) data.code = error.code;
+  data.detail =
+    error.detail || defaultErrorMessage(error.status || error.resCode || code);
+  data.resCode = error.status || error.resCode || code;
+  if (error.from) data.from = error.from;
   if (error.type) data.type = error.type;
   if (error.missings) data.missings = error.missings;
   if (error.invalids) data.invalids = error.invalids;
@@ -46,12 +47,12 @@ const formatError = (code, error) => {
   return data;
 };
 
-exports.throwError = (code, from, error) => {
-  if (typeof error === "Error") {
+exports.newError = (code, from, error) => {
+  if (error instanceof Error) {
     return formatError(code, error);
   }
 
-  const newError = new Error("====== kasih warna " + from);
+  let newError = new Error();
   newError.from = from;
 
   switch (typeof error) {
@@ -66,5 +67,9 @@ exports.throwError = (code, from, error) => {
       break;
   }
 
-  throw formatError(code, newError);
+  return formatError(code, newError);
+};
+
+exports.throwError = (code, from, error) => {
+  throw exports.newError(code, from, error);
 };

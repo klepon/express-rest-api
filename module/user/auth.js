@@ -17,15 +17,14 @@ exports.createJwtToken = (payload) => {
 */
 exports.authToken = (req, res, next) => {
   const token = req.headers["authorization"];
-  if (!token) throwError(401, authToken); // return res.status(401).send("Access denied");
-  console.log("===== trhownya lwat");
+  if (!token) throwError(401, authToken);
 
   jwt.verify(token, process.env.LOGIN_JWT_SECRET, (err, data) => {
     if (err) {
       if (err.name === "TokenExpiredError") {
-        throwError(403, authToken); //return res.status(403).send("Token expired");
+        throwError(403, authToken);
       } else {
-        throwError(403, authToken); //return res.status(403).send("Invalid token");
+        throwError(403, authToken);
       }
     }
     req.userPuid = data.puid;

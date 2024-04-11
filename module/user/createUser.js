@@ -18,8 +18,9 @@ const bcrypt = require("bcrypt");
 const pool = require("../../database/pool");
 const { generateRandomNumber } = require("./util");
 const { throwError } = require("../../util/error");
+const { table } = require("./constant");
 
-exports.createUser = async (req, _res, next) => {
+exports.createUser = async (req, res, next) => {
   try {
     const { display_name, email, username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,9 +33,9 @@ exports.createUser = async (req, _res, next) => {
       generateRandomNumber(),
     ]);
     if (!result.rowCount) {
-      throwError(400, "create user")
+      throwError(400, "Create user")
     }
-    next();
+    res.status(200).send("User registered successfully");
   } catch (error) {
     next(error);
   }

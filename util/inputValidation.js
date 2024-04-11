@@ -1,4 +1,4 @@
-const { throwError, debugErrorLine } = require("./error");
+const { throwError } = require("./error");
 
 /**
  * alphanumeric
@@ -175,26 +175,20 @@ const validate = (check, text) => {
   }
  */
 exports.inputValidation = (req, _res, next) => {
-  const missing = [];
-  const invalid = [];
+  const missings = [];
+  const invalids = [];
   for (const prop of req.reqInputProps) {
     const { [prop]: value = null } = req.inputToValidate;
     if (value === null || value === undefined) {
-      missing.push(prop);
+      missings.push(prop);
     }
     if (!validate(prop, req.inputToValidate[prop])) {
-      invalid.push(prop);
+      invalids.push(prop);
     }
   }
 
-  if (missing.length > 0 || invalid.length > 0) {
-    debugErrorLine("inputValidation", { missing, invalid });
-    throw throwError(
-      400,
-      "Missing property or invalid value",
-      missing,
-      invalid
-    );
+  if (missings.length > 0 || invalids.length > 0) {
+    throwError(400, "Input validation", { missings, invalids });
   }
   next();
 };
