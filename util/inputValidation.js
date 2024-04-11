@@ -81,7 +81,7 @@ const password = (text) => {
  * max char 255
  */
 const bio = (text) => {
-  return /^[a-zA-Z0-9\s.,-]{1, 255}$/.test(text);
+  return /^[a-zA-Z0-9\s.,-]{1,255}$/.test(text);
 };
 
 /**
@@ -89,7 +89,7 @@ const bio = (text) => {
  * max char 255
  */
 const address = (text) => {
-  return /^[a-zA-Z0-9\s.,]{1, 255}$/.test(text);
+  return /^[a-zA-Z0-9\s.,]{1,255}$/.test(text);
 };
 
 /**
@@ -185,6 +185,12 @@ exports.inputValidation = (req, _res, next) => {
   for (const prop of req.reqInputProps) {
     const { [prop]: value = null } = req.inputToValidate;
 
+    console.log(
+      "======= !validate(prop, value): ",
+      prop,
+      value,
+      !validate(prop, value)
+    );
     if ((value === null || value === undefined) && !optional.includes(prop)) {
       missings.push(prop);
     } else if (

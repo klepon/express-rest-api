@@ -22,10 +22,11 @@ if (process.env.LOGIN_JWT_SECRET.length < 512) {
 
 const userRouter = express.Router();
 
-// private route
+// todo send email verification 
+// todo verify email
 userRouter.post("/register", registerData, inputValidation, createUser);
 userRouter.post("/login", loginData, inputValidation, login);
 userRouter.get("/profile", authToken, readUser, profile);
-userRouter.post("/profile", updateData, inputValidation, authToken, readUser, updateUser);
+userRouter.patch("/profile", updateData, inputValidation, authToken, readUser, updateUser);
 
 module.exports = userRouter;

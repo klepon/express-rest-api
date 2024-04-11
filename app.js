@@ -21,6 +21,11 @@ app.use(bodyParser.json());
 // route
 app.use("/user", userRouter);
 
+// handle error route
+app.use((req, res, next) => {
+  res.status(404).send("Route not found");
+});
+
 // create table
 (async () => {
   await userTable();

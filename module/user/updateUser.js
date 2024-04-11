@@ -1,8 +1,8 @@
 /** update my profile, see input validation for body value
  *
  * required
- * string req.userAuthPuid from ./auth.js
- * object req.userAuthData
+ * array req.reqInputProps from ./updateData.js
+ * object req.userAuthData from ./readUser.js
  * object req.cleanData from ./registerData.js
  *
  * response
@@ -11,35 +11,47 @@
  */
 
 const pool = require("../../database/pool");
+const { throwError } = require("../../util/error");
 const { table } = require("./constant");
 const { generateRandomNumber } = require("./util");
 
 exports.updateUser = async (req, res, next) => {
   try {
-    const { display_name, email, username, avatar_id, bio, address, latlng } =
-      req.cleanData;
+    const coloumns = [];
+    const values = [];
+    let index = 0;
+    for (const prop of req.reqInputProps) {
+      const { [prop]: current = null } = req.userAuthData;
+      const { [prop]: newData = null } = req.cleanData;
 
-    // check if email change
-    const emailValidation =
-      req.userAuthData.email !== email
-        ? `, email_validation = ${generateRandomNumber()}`
-        : "";
+      if (current !== newData) {
+        index++;
+        coloumns.push(`${prop} = $${index}`);
+        if (
+          prop === "email_validation" &&
+          req.userAuthData.email !== req.cleanData.email
+        ) {
+          values.push(generateRandomNumber());
+        } else if (prop === "avatar_id") {
+          values.push(parseInt(newData));
+        } else {
+          values.push(newData);
+        }
+      }
+    }
 
-    // make query
-    const query = `UPDATE ${table.user} SET display_name = $1, email = $2, username = $3, avatar_id = $4, bio = $5, address = $6, latlng = $7 ${emailValidation} WHERE puid = $8 AND is_blocked = 'f'`;
-    const value = [
-      display_name,
-      email,
-      username,
-      parseInt(avatar_id) || null,
-      bio || null,
-      address || null,
-      latlng || null,
-      req.userAuthPuid,
-    ];
+    const query = `UPDATE ${table.user} SET ${coloumns.join(
+      ", "
+    )} WHERE puid = $${index + 1} AND is_blocked = 'f'`;
+    values.push(req.userAuthPuid);
+
+    if (values.length === 1) {
+      throwError(400, "Update user", "Nothing to update");
+    }
+
     // todo add update at
-    // todo validate timezone, 
-    const result = await pool.query(query, value);
+    // todo validate timezone,
+    const result = await pool.query(query, values);
     res.status(200).json(result.rowCount);
   } catch (error) {
     next(error);
