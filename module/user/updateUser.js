@@ -58,7 +58,7 @@ exports.updateUser = async (req, res, next) => {
     const result = await pool.query(query, values);
 
     if (!result.rowCount) {
-      throwError(400, "Create user", "Fail updating user");
+      throwError(400, "Update user", "Fail updating user");
     }
 
     if (req.userAuthData.email !== req.cleanData.email) {

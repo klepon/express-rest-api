@@ -11,6 +11,8 @@ const { updateUser } = require("./updateUser");
 const { updateData } = require("./updateData");
 const { sendEmailVerificationCode } = require("./sendEmailVerificationCode");
 const { userOnFinish } = require("./userOnFinish");
+const { verifyEmailData } = require("./verifyEmailData");
+const { verifyEmail } = require("./verifyEmail");
 
 // check envar for jwt token
 if (process.env.LOGIN_JWT_SECRET.length < 512) {
@@ -26,7 +28,6 @@ const onFinish = express.Router();
 onFinish.use(userOnFinish);
 
 const router = express.Router();
-// todo verify email
 router.post("/register", registerData, inputValidation, createUser);
 router.post("/login", loginData, inputValidation, login);
 router.get("/profile", authToken, readUser, profile);
@@ -43,6 +44,14 @@ router.get(
   authToken,
   readUser,
   sendEmailVerificationCode
+);
+router.patch(
+  "/verify-email",
+  verifyEmailData,
+  inputValidation,
+  authToken,
+  readUser,
+  verifyEmail
 );
 
 exports.userRoutes = router;

@@ -43,7 +43,7 @@ const createTable = async () => {
     await insertAdminUser();
     console.log(`\u2713 Super User created successfully \n`);
   } catch (error) {
-    error.from = `Creating table ${table.user}`;
+    error.service = `Creating table ${table.user}`;
     debugError(error)
   }
 };
@@ -59,7 +59,7 @@ exports.userTable = async () => {
       } else console.log(`\u2713 Table ${table.user} check`);
     } else await createTable();
   } catch (error) {
-    error.from = "Checking tabel user";
+    error.service = "Checking tabel user";
     debugError(error);
   }
 };

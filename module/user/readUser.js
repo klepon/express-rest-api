@@ -36,7 +36,7 @@ exports.readUser = async (req, res, next) => {
     const result = await pool.query(query, [req.userAuthPuid]);
 
     if (result.rowCount !== 1) {
-      throwError(404, "Read user", "user not found")
+      throwError(404, "Read user", "User not found")
     }
 
     req.userAuthData = result.rows[0];

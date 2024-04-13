@@ -27,15 +27,10 @@ app.use((_req, res, _next) => {
   res.status(404).send("Route not found");
 });
 
-// create table
-(async () => {
-  await userTable();
-})();
-
-// handle error
+// handle error response
 app.use((error, _req, res, _next) => {
-  if (!error.from) {
-    error.from = "App catch error";
+  if (!error.service) {
+    error.service = "App catch error";
     debugError(error);
   }
 
@@ -44,9 +39,13 @@ app.use((error, _req, res, _next) => {
     ? error
     : newError(code, "Handle error", error);
   delete responseError.resCode;
-  delete responseError.from;
   res.status(code).json(responseError);
 });
+
+// create table
+(async () => {
+  await userTable();
+})();
 
 app.listen(PORT, () => {
   console.log(`\nServer is running on port ${PORT}`);

@@ -28,8 +28,8 @@ exports.fatalError = (message, description) => {
 exports.debugError = (error) => {
   if (process.env.DEBUG_ERROR_REST_API === "true") {
     console.error("");
-    console.error("\x1b[1m\x1b[31m%s\x1b[0m", `Error ${error.from}:`);
-    delete error.from;
+    console.error("\x1b[1m\x1b[31m%s\x1b[0m", `Error ${error.service}:`);
+    delete error.service;
     console.error(error);
     console.error("----------\n");
   }
@@ -41,7 +41,7 @@ const formatError = (code, error) => {
   data.detail =
     error.detail || defaultErrorMessage(error.status || error.resCode || code);
   data.resCode = error.status || error.resCode || code;
-  if (error.from) data.from = error.from;
+  if (error.service) data.service = error.service;
   if (error.type) data.type = error.type;
   if (error.code) data.code = error.code;
   if (error.missings) data.missings = error.missings;
@@ -50,13 +50,13 @@ const formatError = (code, error) => {
   return data;
 };
 
-exports.newError = (code, from, error) => {
+exports.newError = (code, service, error) => {
   if (error instanceof Error) {
     return formatError(code, error);
   }
 
   let newError = new Error();
-  newError.from = from;
+  newError.service = service;
 
   switch (typeof error) {
     case "string":
@@ -73,6 +73,6 @@ exports.newError = (code, from, error) => {
   return formatError(code, newError);
 };
 
-exports.throwError = (code, from, error) => {
-  throw exports.newError(code, from, error);
+exports.throwError = (code, service, error) => {
+  throw exports.newError(code, service, error);
 };
