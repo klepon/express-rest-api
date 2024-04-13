@@ -3,26 +3,27 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 
-// const { removeMediaOnDeleteUser } = require("./mediaUploader/onDeleteUser.js");
-const userRouter = require("./module/user/router.js");
-
+const { debugError, newError } = require("./util/error.js");
 const { userTable } = require("./module/user/userTable.js");
 
-const { debugError, newError } = require("./util/error.js");
+// const { removeMediaOnDeleteUser } = require("./mediaUploader/onDeleteUser.js");
+const { userOnFinish, userRoutes } = require("./module/user/router.js");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-// response route middleware
+// onFinish route middleware
 // app.use(removeMediaOnDeleteUser);
+app.use(userOnFinish);
 
 // route
-app.use("/user", userRouter);
+app.use("/user", userRoutes);
+
 
 // handle error route
-app.use((req, res, next) => {
+app.use((_req, res, _next) => {
   res.status(404).send("Route not found");
 });
 
@@ -33,11 +34,10 @@ app.use((req, res, next) => {
 
 // handle error
 app.use((error, _req, res, _next) => {
-  const errorFrom = error;
   if (!error.from) {
-    errorFrom.from = "Handle error";
+    error.from = "App catch error";
+    debugError(error);
   }
-  debugError(error.from ? error : errorFrom);
 
   const code = error.resCode || 500;
   const responseError = error.resCode

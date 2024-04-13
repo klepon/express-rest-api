@@ -9,6 +9,8 @@ const { readUser } = require("./readUser");
 const { profile } = require("./profile");
 const { updateUser } = require("./updateUser");
 const { updateData } = require("./updateData");
+const { sendEmailVerificationCode } = require("./sendEmailVerificationCode");
+const { userOnFinish } = require("./userOnFinish");
 
 // check envar for jwt token
 if (process.env.LOGIN_JWT_SECRET.length < 512) {
@@ -20,13 +22,28 @@ if (process.env.LOGIN_JWT_SECRET.length < 512) {
   );
 }
 
-const userRouter = express.Router();
+const onFinish = express.Router();
+onFinish.use(userOnFinish);
 
-// todo send email verification 
+const router = express.Router();
 // todo verify email
-userRouter.post("/register", registerData, inputValidation, createUser);
-userRouter.post("/login", loginData, inputValidation, login);
-userRouter.get("/profile", authToken, readUser, profile);
-userRouter.patch("/profile", updateData, inputValidation, authToken, readUser, updateUser);
+router.post("/register", registerData, inputValidation, createUser);
+router.post("/login", loginData, inputValidation, login);
+router.get("/profile", authToken, readUser, profile);
+router.patch(
+  "/profile",
+  updateData,
+  inputValidation,
+  authToken,
+  readUser,
+  updateUser
+);
+router.get(
+  "/request-email-verification-code",
+  authToken,
+  readUser,
+  sendEmailVerificationCode
+);
 
-module.exports = userRouter;
+exports.userRoutes = router;
+exports.userOnFinish = onFinish;

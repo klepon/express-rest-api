@@ -2,7 +2,10 @@
  * create user record
  * 
  * required: 
- * object req.cleanData from ./registerData.js
+ * object req.cleanData from /util/inputValidation.js
+ * 
+ * passing on success: 
+ * string req.onFinish
  * 
  * response:
  * 200 success
@@ -19,11 +22,13 @@ const bcrypt = require("bcrypt");
 const pool = require("../../database/pool");
 const { generateRandomNumber } = require("./util");
 const { throwError } = require("../../util/error");
-const { table } = require("./constant");
+const { table, onFinishUser } = require("./constant");
 
 exports.createUser = async (req, res, next) => {
   try {
-    const { display_name, email, username, password } = req.cleanData;
+    req.cleanData.email_validation = generateRandomNumber();
+    const { display_name, email, username, password, email_validation } =
+      req.cleanData;
     const hashedPassword = await bcrypt.hash(password, 10);
     const query = `INSERT INTO ${table.user} (display_name, email, username, password, email_validation) VALUES ($1, $2, $3, $4, $5)`;
     const result = await pool.query(query, [
@@ -31,11 +36,14 @@ exports.createUser = async (req, res, next) => {
       email,
       username,
       hashedPassword,
-      generateRandomNumber(),
+      email_validation,
     ]);
+
     if (!result.rowCount) {
-      throwError(400, "Create user")
+      throwError(400, "Create user");
     }
+
+    req.onFinish = onFinishUser.emailUpdated;
     res.status(200).send("User registered successfully");
   } catch (error) {
     next(error);

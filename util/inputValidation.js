@@ -185,12 +185,6 @@ exports.inputValidation = (req, _res, next) => {
   for (const prop of req.reqInputProps) {
     const { [prop]: value = null } = req.inputToValidate;
 
-    console.log(
-      "======= !validate(prop, value): ",
-      prop,
-      value,
-      !validate(prop, value)
-    );
     if ((value === null || value === undefined) && !optional.includes(prop)) {
       missings.push(prop);
     } else if (

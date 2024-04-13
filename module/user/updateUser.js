@@ -3,7 +3,10 @@
  * required
  * array req.reqInputProps from ./updateData.js
  * object req.userAuthData from ./readUser.js
- * object req.cleanData from ./registerData.js
+ * object req.cleanData from /util/inputValidation.js
+ *
+ * passing on success:
+ * string req.onFinish
  *
  * response
  * /utis/inputValidation.js error
@@ -12,13 +15,19 @@
 
 const pool = require("../../database/pool");
 const { throwError } = require("../../util/error");
-const { table } = require("./constant");
+const { table, onFinishUser } = require("./constant");
 const { generateRandomNumber } = require("./util");
 
 exports.updateUser = async (req, res, next) => {
   try {
     const coloumns = [];
     const values = [];
+    req.reqInputProps.push("email_validation");
+    req.cleanData.email_validation =
+      req.userAuthData.email !== req.cleanData.email
+        ? generateRandomNumber()
+        : req.userAuthData.email_validation;
+
     let index = 0;
     for (const prop of req.reqInputProps) {
       const { [prop]: current = null } = req.userAuthData;
@@ -27,12 +36,7 @@ exports.updateUser = async (req, res, next) => {
       if (current !== newData) {
         index++;
         coloumns.push(`${prop} = $${index}`);
-        if (
-          prop === "email_validation" &&
-          req.userAuthData.email !== req.cleanData.email
-        ) {
-          values.push(generateRandomNumber());
-        } else if (prop === "avatar_id") {
+        if (prop === "avatar_id") {
           values.push(parseInt(newData));
         } else {
           values.push(newData);
@@ -52,7 +56,16 @@ exports.updateUser = async (req, res, next) => {
     // todo add update at
     // todo validate timezone,
     const result = await pool.query(query, values);
-    res.status(200).json(result.rowCount);
+
+    if (!result.rowCount) {
+      throwError(400, "Create user", "Fail updating user");
+    }
+
+    if (req.userAuthData.email !== req.cleanData.email) {
+      req.onFinish = onFinishUser.emailUpdated;
+    }
+
+    res.status(200).send("User updated successfully");
   } catch (error) {
     next(error);
   }
