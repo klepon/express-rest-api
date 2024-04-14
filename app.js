@@ -2,11 +2,13 @@ require("dotenv").config();
 
 const express = require("express");
 const bodyParser = require("body-parser");
-
+const cron = require("node-cron");
 const { debugError, newError } = require("./util/error.js");
-const { userTable } = require("./module/user/userTable.js");
-
-// const { removeMediaOnDeleteUser } = require("./mediaUploader/onDeleteUser.js");
+const {
+  userTable,
+  userHistoryTable,
+  userDeletionSchedule,
+} = require("./module/user/table.js");
 const { userOnFinish, userRoutes } = require("./module/user/router.js");
 
 const app = express();
@@ -15,12 +17,10 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 // onFinish route middleware
-// app.use(removeMediaOnDeleteUser);
 app.use(userOnFinish);
 
 // route
 app.use("/user", userRoutes);
-
 
 // handle error route
 app.use((_req, res, _next) => {
@@ -42,8 +42,14 @@ app.use((error, _req, res, _next) => {
   res.status(code).json(responseError);
 });
 
+cron.schedule("0 1 * * *", () => {
+  console.log("check table cron job");
+});
+
 // create table
 (async () => {
+  await userHistoryTable();
+  await userDeletionSchedule();
   await userTable();
 })();
 

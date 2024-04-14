@@ -3,13 +3,14 @@
  * 
  * POST
  * body { 
-    display_name: " string",
-    email: " string",
-    username: " string",
-    avatar_id: " string",
-    bio: " string",
-    address: " string",
-    latlng: " string",
+    display_name: "string",
+    email: "string",
+    username: "string",
+    avatar_id: "string",
+    bio: "string",
+    address: "string",
+    latlng: "string",
+    timezone: "string",
  }
  * passing:
  * object req.inputToValidate
@@ -27,7 +28,9 @@ exports.updateData = async (req, _res, next) => {
     "bio",
     "address",
     "latlng",
+    "timezone",
   ];
+
   req.optionalInputProps = ["avatar_id", "bio", "address", "latlng"];
   next();
 };

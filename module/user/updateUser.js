@@ -1,16 +1,18 @@
-/** update my profile, see input validation for body value
+/** update my profile
  *
  * required
- * array req.reqInputProps from ./updateData.js
- * object req.userAuthData from ./readUser.js
- * object req.cleanData from /util/inputValidation.js
+ * array req.reqInputProps
+ * object req.userAuthData
+ * object req.cleanData
  *
  * passing on success:
  * string req.onFinish
  *
  * response
- * /utis/inputValidation.js error
- * 200, 1 success, 0 fail
+ * 200 User updated successfully
+ * 400
+ * - Nothing to update
+ * - Fail updating user
  */
 
 const pool = require("../../database/pool");
@@ -22,11 +24,15 @@ exports.updateUser = async (req, res, next) => {
   try {
     const coloumns = [];
     const values = [];
+
     req.reqInputProps.push("email_validation");
+    req.reqInputProps.push("update_at");
+    
     req.cleanData.email_validation =
       req.userAuthData.email !== req.cleanData.email
         ? generateRandomNumber()
         : req.userAuthData.email_validation;
+    req.cleanData.update_at = new Date();
 
     let index = 0;
     for (const prop of req.reqInputProps) {
@@ -53,8 +59,6 @@ exports.updateUser = async (req, res, next) => {
       throwError(400, "Update user", "Nothing to update");
     }
 
-    // todo add update at
-    // todo validate timezone,
     const result = await pool.query(query, values);
 
     if (!result.rowCount) {
@@ -65,6 +69,7 @@ exports.updateUser = async (req, res, next) => {
       req.onFinish = onFinishUser.emailUpdated;
     }
 
+    req.onFinish = onFinishUser.updated;
     res.status(200).send("User updated successfully");
   } catch (error) {
     next(error);

@@ -52,6 +52,7 @@ const formatError = (code, error) => {
 
 exports.newError = (code, service, error) => {
   if (error instanceof Error) {
+    error.service = error.service || service;
     return formatError(code, error);
   }
 

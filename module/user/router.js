@@ -13,6 +13,8 @@ const { sendEmailVerificationCode } = require("./sendEmailVerificationCode");
 const { userOnFinish } = require("./userOnFinish");
 const { verifyEmailData } = require("./verifyEmailData");
 const { verifyEmail } = require("./verifyEmail");
+const { removeUser } = require("./removeUser");
+const { fatalError } = require("../../util/error");
 
 // check envar for jwt token
 if (process.env.LOGIN_JWT_SECRET.length < 512) {
@@ -26,11 +28,13 @@ if (process.env.LOGIN_JWT_SECRET.length < 512) {
 
 const onFinish = express.Router();
 onFinish.use(userOnFinish);
+// todo update history, on update and on delete, on validate email??
 
 const router = express.Router();
 router.post("/register", registerData, inputValidation, createUser);
 router.post("/login", loginData, inputValidation, login);
 router.get("/profile", authToken, readUser, profile);
+router.delete("/profile", authToken, removeUser)
 router.patch(
   "/profile",
   updateData,

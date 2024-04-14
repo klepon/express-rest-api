@@ -7,20 +7,21 @@
  * response
  * 200
  * {
+    "puid": string
     "display_name": string
     "email": string
     "username": string
     "email_validation": number, 1 === valid
     "is_blocked": boolean
-    "role": string
+    "in_delete_schedule": boolean
     "avatar_id": number | null
     "bio": string | null
     "address": string | null
     "latlng": string | null
-    "puid": string
+    "timezone": string
+    "created_at": timestamp
+    "update_at": timestamp
   }
- * response:
- * 403
 */
 
 const { throwError } = require("../../util/error");
@@ -33,18 +34,20 @@ exports.profile = async (req, res, next) => {
     }
 
     const privateData = [
+      "puid",
       "display_name",
       "email",
       "username",
       "email_validation",
       "is_blocked",
-      "role",
+      "in_delete_schedule",
       "avatar_id",
       "bio",
       "address",
       "latlng",
-      "puid",
+      "timezone",
       "created_at",
+      "update_at",
       "timezone",
     ];
     res.status(200).json(filterObject(req.userAuthData, privateData));

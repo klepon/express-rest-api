@@ -2,15 +2,14 @@
  * create user record
  * 
  * required: 
- * object req.cleanData from /util/inputValidation.js
+ * object req.cleanData
  * 
  * passing on success: 
  * string req.onFinish
  * 
  * response:
- * 200 success
- * /utis/inputValidation.js error
- * 500, { "detail": default 500 message }
+ * 200 User registered successfully
+ * 400
  * 500, {
   "code": "23505",
   "detail": "Key (username)=(some_username) already exists." 

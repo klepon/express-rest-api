@@ -126,6 +126,10 @@ const uuidv4 = (text) => {
   );
 };
 
+const timezone = (text) => {
+  return /^(\+|-)?([1-9]|1[0-4])$/.test(text);
+};
+
 const validate = (check, text) => {
   switch (check) {
     case "display_name":
@@ -154,6 +158,8 @@ const validate = (check, text) => {
       return permission(text);
     case "puid":
       return uuidv4(text);
+    case "timezone":
+      return timezone(text);
   }
   return true;
 };

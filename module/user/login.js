@@ -1,7 +1,7 @@
 /** login, see input validation for body value
  * 
  * required: 
- * object req.cleanData from ./registerData.js
+ * object req.cleanData
  * 
  * response
  * /utis/inputValidation.js error
