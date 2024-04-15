@@ -16,8 +16,10 @@ exports.sendEmail = (to, subject, message, callback) => {
     html: message,
   };
 
-  if(!process.env.EMAIL_PASSWORD) {
-    console.log("======= debug mailer mailOptions: ", mailOptions);
+  if (!process.env.EMAIL_PASSWORD) {
+    if (process.env.DEBUG_ERROR_REST_API === "true") {
+      console.log("======= debug mailer mailOptions: ", mailOptions);
+    }
     callback({ error: null });
     // callback({ error: new Error() });
     return;

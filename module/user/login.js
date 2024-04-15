@@ -23,14 +23,14 @@ exports.login = async (req, res, next) => {
     const result = await pool.query(query, [username]);
 
     if (!result.rows.length) {
-      throwError(401, "Login user not found");
+      throwError(401, "Login get user");
     }
 
     const user = result.rows[0];
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      throw throwError(401, "Login invalid password");
+      throw throwError(401, "Login check password");
     }
 
     const token = createJwtToken({ puid: user.puid });

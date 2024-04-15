@@ -37,7 +37,7 @@ app.use((error, _req, res, _next) => {
   const code = error.resCode || 500;
   const responseError = error.resCode
     ? error
-    : newError(code, "Handle error", error);
+    : newError(code, null, error);
   delete responseError.resCode;
   res.status(code).json(responseError);
 });
@@ -46,13 +46,19 @@ cron.schedule("0 1 * * *", () => {
   console.log("check table cron job");
 });
 
-// create table
-(async () => {
-  await userHistoryTable();
-  await userDeletionSchedule();
-  await userTable();
-})();
+if (require.main === module) {
+  // create table
+  (async () => {
+    await userHistoryTable();
+    await userDeletionSchedule();
+    await userTable();
+  })();
 
-app.listen(PORT, () => {
-  console.log(`\nServer is running on port ${PORT}`);
-});
+  app.listen(PORT, () => {
+    console.log(`\nServer is running on port ${PORT}`);
+  });
+} else {
+  process.env.DEBUG_ERROR_REST_API = "false";
+}
+
+module.exports = app;

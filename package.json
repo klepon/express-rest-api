@@ -4,7 +4,8 @@
   "description": "Node.js REST API with PostgreSQL and authentication",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "node scripts/test.js"
   },
   "keywords": [
     "node",
@@ -23,5 +24,9 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.11",
     "pg": "^8.7.1"
+  },
+  "devDependencies": {
+    "mocha": "^10.4.0",
+    "supertest": "^6.3.4"
   }
 }

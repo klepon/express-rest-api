@@ -1,3 +1,10 @@
-# rest api using express
-## progress
-* addinf role and permission, all user route is broke for now
+# Rest api using express
+## Services
+### User
+* register with email password
+* login
+* get profile
+* update profile
+* request email verification code
+* verify email address
+* delete profile

@@ -191,7 +191,10 @@ exports.inputValidation = (req, _res, next) => {
   for (const prop of req.reqInputProps) {
     const { [prop]: value = null } = req.inputToValidate;
 
-    if ((value === null || value === undefined) && !optional.includes(prop)) {
+    if (
+      (value === null || value === undefined || value.trim() === "") &&
+      !optional.includes(prop)
+    ) {
       missings.push(prop);
     } else if (
       !(value === null || value === undefined) &&
@@ -199,7 +202,7 @@ exports.inputValidation = (req, _res, next) => {
     ) {
       invalids.push(prop);
     } else {
-      // todo: sanitize prop before added to data
+      // todo: sanitize prop before added to data, trim space
       data[prop] = value;
     }
   }

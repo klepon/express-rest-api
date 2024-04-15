@@ -24,7 +24,7 @@ masuk ke db postgres untuk lihat semua db
 
 ### perintah dalam server/postgres (#)
 pastikan sudah melakukan akses terlebih dahulu  
-`# \q` keluar dari server
+`# \q` keluar dari server  
 `# \l` list database  
 `# \c db_name` masuk ke db  
 `# \dt` list table  

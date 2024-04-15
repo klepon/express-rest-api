@@ -29,9 +29,11 @@ exports.debugError = (error) => {
   if (process.env.DEBUG_ERROR_REST_API === "true") {
     console.error("");
     console.error("\x1b[1m\x1b[31m%s\x1b[0m", `Error ${error.service}:`);
+    const service = error.service;
     delete error.service;
     console.error(error);
     console.error("----------\n");
+    error.service = service;
   }
 };
 
