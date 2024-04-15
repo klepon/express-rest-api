@@ -1,18 +1,15 @@
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
-const { removeTestUserData, createTestUserData } = require("./util");
+const { removeTestUserData, createTestUserData, getToken } = require("./util");
 
 let token = "";
+
 describe("Test Endpoint GET Profile /user/profile", () => {
   before(async () => {
     await removeTestUserData();
     await createTestUserData();
-    const res = await request(app).post("/user/login").send({
-      username: "12345678a_-",
-      password: "1aB!@#$%^&*()_-",
-    });
-    token = JSON.parse(res.text).token;
+    token = await getToken();
   });
 
   it('Should return "Missing token"', async () => {
@@ -24,10 +21,25 @@ describe("Test Endpoint GET Profile /user/profile", () => {
     );
   });
 
+  it('Should return "Token expired"', async () => {
+    const res = await request(app)
+      .get("/user/profile")
+      .set(
+        "Authorization",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWlkIjoiYjg4MTE3NDEtMzU4OS00NGRmLWIzNTItYmM2YTdmYjk3YThhIiwiaWF0IjoxNzEzMTk1NTgxLCJleHAiOjE3MTMxOTU1ODB9.CEBGjisp6DOiBy6v0_9IbDoOyNsAO-NbttX7jfyRzf0"
+      );
+
+    assert.equal(res.status, 403);
+    assert.equal(
+      res.text,
+      `{"detail":"Forbidden","service":"AuthToken expired"}`
+    );
+  });
+
   it('Should return "Invalid token"', async () => {
     const res = await request(app)
       .get("/user/profile")
-      .set("Authorization", "invalidteoken");
+      .set("Authorization", "invalidToken");
     assert.equal(res.status, 403);
     assert.equal(
       res.text,

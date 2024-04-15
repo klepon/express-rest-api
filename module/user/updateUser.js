@@ -1,7 +1,6 @@
 /** update my profile
  *
  * required
- * array req.reqInputProps
  * object req.userAuthData
  * object req.cleanData
  *
@@ -25,21 +24,18 @@ exports.updateUser = async (req, res, next) => {
     const coloumns = [];
     const values = [];
 
-    req.reqInputProps.push("email_validation");
-    req.reqInputProps.push("update_at");
-    
-    req.cleanData.email_validation =
-      req.userAuthData.email !== req.cleanData.email
-        ? generateRandomNumber()
-        : req.userAuthData.email_validation;
     req.cleanData.update_at = new Date();
 
+    if (req.cleanData.email && req.userAuthData.email !== req.cleanData.email) {
+      req.cleanData.email_validation = generateRandomNumber();
+    }
+
     let index = 0;
-    for (const prop of req.reqInputProps) {
+    for (const prop of Object.keys(req.cleanData)) {
       const { [prop]: current = null } = req.userAuthData;
       const { [prop]: newData = null } = req.cleanData;
 
-      if (current !== newData) {
+      if (newData && current !== newData) {
         index++;
         coloumns.push(`${prop} = $${index}`);
         if (prop === "avatar_id") {
@@ -55,7 +51,7 @@ exports.updateUser = async (req, res, next) => {
     )} WHERE puid = $${index + 1} AND is_blocked = 'f'`;
     values.push(req.userAuthPuid);
 
-    if (values.length === 1) {
+    if (index <= 1) {
       throwError(400, "Update user", "Nothing to update");
     }
 

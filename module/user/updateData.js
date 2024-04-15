@@ -14,13 +14,12 @@
  }
  * passing:
  * object req.inputToValidate
- * array req.reqInputProps
- * array optionalInputProps
+ * array req.optionalInputProps
  */
 
 exports.updateData = async (req, _res, next) => {
   req.inputToValidate = req.body;
-  req.reqInputProps = [
+  req.optionalInputProps = [
     "display_name",
     "email",
     "username",
@@ -30,7 +29,5 @@ exports.updateData = async (req, _res, next) => {
     "latlng",
     "timezone",
   ];
-
-  req.optionalInputProps = ["avatar_id", "bio", "address", "latlng"];
   next();
 };

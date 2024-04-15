@@ -52,7 +52,7 @@ const email = (text) => {
   const allowedSpecialCharInDomain =
     process.env.VALIDATION_EMAIL_ALLOWED_SPECIAL_CHAR_IN_DOMAIN || "-_";
   const maxSubDomainDeep =
-    1 + (process.env.VALIDATION_EMAIL_MAX_SUB_DOMAIN_DEEP || 1);
+    (process.env.VALIDATION_EMAIL_MAX_SUB_DOMAIN_DEEP.trim() || 1) * 1 + 1;
   const regexString = `^[a-zA-Z0-9]{2,}(?:[${allowedSpecialCharInEmail}]{0,1}[a-zA-Z0-9]+)*@(?:[a-zA-Z0-9]+(?:[${allowedSpecialCharInDomain}]{0,1}[a-zA-Z0-9]+)*\\.){1,${maxSubDomainDeep}}[a-zA-Z]{2,}$`;
   const regex = new RegExp(regexString);
   if (!regex.test(text) || text.length > 100) {
@@ -170,7 +170,7 @@ const validate = (check, text) => {
  * required: 
  * object req.inputToValidate
  * array req.reqInputProps
- * array optionalInputProps optional
+ * array reg.optionalInputProps optional
  * 
  * passing:
  * req.cleanData
@@ -187,23 +187,42 @@ exports.inputValidation = (req, _res, next) => {
   const missings = [];
   const invalids = [];
   const data = {};
-  const optional = req.optionalInputProps || [];
-  for (const prop of req.reqInputProps) {
-    const { [prop]: value = null } = req.inputToValidate;
 
-    if (
-      (value === null || value === undefined || value.trim() === "") &&
-      !optional.includes(prop)
-    ) {
-      missings.push(prop);
-    } else if (
-      !(value === null || value === undefined) &&
-      !validate(prop, value)
-    ) {
-      invalids.push(prop);
-    } else {
-      // todo: sanitize prop before added to data, trim space
-      data[prop] = value;
+  const getValue = (prop) => {
+    let { [prop]: value = null } = req.inputToValidate;
+    return value && typeof value === "string" && value.trim() === ""
+      ? null
+      : value;
+  };
+
+  const setData = (prop, value) => {
+    // todo: sanitize value before added to data
+    data[prop] = value;
+  };
+
+  if (req.optionalInputProps) {
+    for (const prop of req.optionalInputProps) {
+      const value = getValue(prop);
+
+      if (value && !validate(prop, value)) {
+        invalids.push(prop);
+      } else {
+        setData(prop, value);
+      }
+    }
+  }
+
+  if (req.reqInputProps) {
+    for (const prop of req.reqInputProps) {
+      const value = getValue(prop);
+
+      if (!value) {
+        missings.push(prop);
+      } else if (!validate(prop, value)) {
+        invalids.push(prop);
+      } else {
+        setData(prop, value);
+      }
     }
   }
 

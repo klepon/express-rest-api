@@ -35,20 +35,13 @@
 ### get profile
 
 - missing token
+- token expired
 - invalid token
 - user not found
 - success
 
 ### update profile
 
-- missing on validate display_name
-- missing on validate email
-- missing on validate username
-- missing on validate avatar_id
-- missing on validate bio
-- missing on validate address
-- missing on validate latlng
-- missing on validate timezone
 - invalid on validate display_name
 - invalid on validate email
 - invalid on validate username
@@ -58,10 +51,13 @@
 - invalid on validate latlng
 - invalid on validate timezone
 - missing token
+- token expired
 - invalid token
 - nothing to update
 - profile updated exclude email update
 - profile updated include email, email not validated
+- fail, email exist
+- fail, username exist
 
 ### request email verification code
 

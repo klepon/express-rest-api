@@ -35,9 +35,7 @@ app.use((error, _req, res, _next) => {
   }
 
   const code = error.resCode || 500;
-  const responseError = error.resCode
-    ? error
-    : newError(code, null, error);
+  const responseError = error.resCode ? error : newError(code, null, error);
   delete responseError.resCode;
   res.status(code).json(responseError);
 });
