@@ -1,22 +1,12 @@
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
-const pool = require("../../../database/pool");
-const { table } = require("../constant");
-const { removeTestUserData } = require("./register");
+const { removeTestUserData, createTestUserData } = require("./util");
 
 describe("Test Endpoint POST Login /user/login", () => {
   before(async () => {
     await removeTestUserData();
-
-    try {
-      await request(app).post("/user/register").send({
-        display_name: "display name",
-        email: "test@test.com",
-        username: "12345678a_-",
-        password: "1aB!@#$%^&*()_-",
-      });
-    } catch (_err) {}
+    await createTestUserData();
   });
 
   it('Should return "Auth Token"', async () => {

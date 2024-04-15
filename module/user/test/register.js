@@ -1,20 +1,11 @@
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
-const pool = require("../../../database/pool");
-const { table } = require("../constant");
-
-exports.removeTestUserData = async () => {
-  try {
-    await pool.query(`DELETE FROM ${table.user} WHERE email = $1`, [
-      "test@test.com",
-    ]);
-  } catch (_err) {}
-};
+const { removeTestUserData, createTestUserData } = require("./util");
 
 describe("Test Endpoint POST Register /user/register", () => {
   before(async () => {
-    await this.removeTestUserData();
+    await removeTestUserData();
   });
 
   it('Should return "Missings display_name"', async () => {
@@ -128,12 +119,7 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   it('Should return "User registered successfully"', async () => {
-    const res = await request(app).post("/user/register").send({
-      display_name: "display name",
-      email: "test@test.com",
-      username: "12345678a_-",
-      password: "1aB!@#$%^&*()_-",
-    });
+    const res = await createTestUserData();
     assert.equal(res.status, 200);
     assert.equal(res.text, "User registered successfully");
   });
@@ -167,6 +153,6 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   after(async () => {
-    await this.removeTestUserData();
+    await removeTestUserData();
   });
 });

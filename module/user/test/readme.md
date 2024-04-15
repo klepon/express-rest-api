@@ -10,7 +10,6 @@
 
 ### register with email password
 
-- success
 - fail, missing on validate display_name
 - fail, missing on validate email
 - fail, missing on validate username
@@ -19,52 +18,70 @@
 - fail, invalid on validate email
 - fail, invalid on validate username
 - fail, invalid on validate password
+- success
 - fail, email exist
 - fail, username exist
 
 ### login
 
-- success
+- Auth Token
 - fail, mising on validate username
 - fail, mising on validate password
 - fail, invalid on validate username
 - fail, invalid on validate password
-- 401, Login get user
-- 401, Login check password
-
-<!-- todo: add validation testing, missing/invalid for rest of bellow -->
+- fail, User not found
+- fail, Wrong password
 
 ### get profile
 
-- success
-- invalid or missing token
+- missing token
+- invalid token
 - user not found
-- user blocked
-- user in deletion schedule
-- user email not validate
-- user email valid
+- success
 
 ### update profile
 
-- success, exclude email update
-- success update email, new email not validate
-- invalid or missing token
+- missing on validate display_name
+- missing on validate email
+- missing on validate username
+- missing on validate avatar_id
+- missing on validate bio
+- missing on validate address
+- missing on validate latlng
+- missing on validate timezone
+- invalid on validate display_name
+- invalid on validate email
+- invalid on validate username
+- invalid on validate avatar_id
+- invalid on validate bio
+- invalid on validate address
+- invalid on validate latlng
+- invalid on validate timezone
+- missing token
+- invalid token
+- nothing to update
+- profile updated exclude email update
+- profile updated include email, email not validated
 
 ### request email verification code
 
-- success
 - invalid or missing token
 - fail, email already validate
+- verification code sent
 
 ### verify email address
 
-- success
-- invalid or missing token
-- fail, invalid verification code
-- fail, email already validate
+- missing on validate code
+- invalid on validate code
+- missing token
+- invalid token
+- email verification fail
+- email already validate
+- email validated
 
 ### delete profile
 
-- success
-- invalid or missing token
-- fail, user not found
+- missing token
+- invalid token
+- user not found
+- user added to deletion schedule

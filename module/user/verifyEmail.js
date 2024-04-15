@@ -7,7 +7,8 @@
  *
  * response
  * /utis/inputValidation.js error
- * 200, 1 success, 0 fail
+ * 200 success
+ * 400 fail
  */
 
 const pool = require("../../database/pool.js");
@@ -25,7 +26,7 @@ exports.verifyEmail = async (req, res, next) => {
     const result = await pool.query(query, value);
 
     if (!result.rowCount) {
-      throwError(400, "Verify email", "Fail verify email");
+      throwError(400, "Verify email", "Email verified fail");
     }
 
     res.status(200).json("Email verified successfully");
