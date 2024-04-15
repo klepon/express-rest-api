@@ -4,15 +4,17 @@ const app = require("../../../app");
 const pool = require("../../../database/pool");
 const { table } = require("../constant");
 
-const removeTestData = async () => {
-  await pool.query(`DELETE FROM ${table.user} WHERE email = $1`, [
-    "test@test.com",
-  ]);
+exports.removeTestUserData = async () => {
+  try {
+    await pool.query(`DELETE FROM ${table.user} WHERE email = $1`, [
+      "test@test.com",
+    ]);
+  } catch (_err) {}
 };
 
 describe("Test Endpoint POST Register /user/register", () => {
   before(async () => {
-    await removeTestData();
+    await this.removeTestUserData();
   });
 
   it('Should return "Missings display_name"', async () => {
@@ -165,6 +167,6 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   after(async () => {
-    await removeTestData();
+    await this.removeTestUserData();
   });
 });
