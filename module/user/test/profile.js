@@ -3,7 +3,7 @@ const assert = require("assert");
 const app = require("../../../app");
 const { removeTestUserData, createTestUserData, getToken } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
-const { getPath } = require("../../../util/util");
+const { getPath, nonExistPuidToken } = require("../../../util/util");
 const { userPath } = require("../router");
 
 const path = getPath(userPath, userPath.profile);
@@ -22,10 +22,7 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
   it('Should return "User not found"', async () => {
     const res = await request(app)
       [requestType](path)
-      .set(
-        "Authorization",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWlkIjoiMGZjM2U2NWEtZWMzZC00ZDQ4LWEyZDYtZGM0YjQ1ZDQ4YWI0IiwiaWF0IjoxNzEzMTM4NDgyLCJleHAiOjE3MTM3NDMyODJ9.-Hs4d8iXLor4IkdgIR0NLDd3RlZVLIFAnQFm26sA1-0"
-      );
+      .set("Authorization", nonExistPuidToken);
     assert.equal(res.status, 404);
     assert.equal(res.text, '{"detail":"User not found","service":"Read user"}');
   });

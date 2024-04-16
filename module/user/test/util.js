@@ -8,6 +8,12 @@ const { userPath } = require("../router");
 const username = "12345678a_-";
 const password = "1aB!@#$%^&*()_-";
 
+exports.removeTestScheduleData = async (puid) => {
+  try {
+    await pool.query(`DELETE FROM ${table.schedule} WHERE puid = $1`, [puid]);
+  } catch (_err) {}
+};
+
 exports.removeTestUserData = async () => {
   try {
     await pool.query(
