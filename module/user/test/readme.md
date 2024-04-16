@@ -77,8 +77,8 @@
 - token expired
 - invalid token
 - email verification fail
-- email already validate
 - email validated
+- email already validate
 
 ### delete profile
 

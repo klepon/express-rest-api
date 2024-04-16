@@ -1,15 +1,21 @@
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
-const { removeTestUserData, createTestUserData, getToken } = require("./util");
+const {
+  removeTestUserData,
+  createTestUserData,
+  getToken,
+  getProfile,
+} = require("./util");
 const { testAuth } = require("../../../util/testAuth");
 const { getPath } = require("../../../util/util");
 const { userPath } = require("../router");
 
 const path = getPath(userPath, userPath.profile);
+const requestType = "patch";
 let token = "";
 
-describe(`Test Endpoint Profile, PATCH ${path}`, () => {
+describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
   before(async () => {
     await removeTestUserData();
     await createTestUserData();
@@ -17,7 +23,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   });
 
   it('Should return "Invalid display_name"', async () => {
-    const res = await request(app).patch(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "asd?",
       email: "test@test.com.net",
     });
@@ -29,7 +35,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   });
 
   it('Should return "Invalid email"', async () => {
-    const res = await request(app).patch(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "asd _-",
       email: "test@test.com.net.id",
     });
@@ -41,7 +47,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   });
 
   it('Should return "Invalid username"', async () => {
-    const res = await request(app).patch(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "",
       email: "",
       username: "12345678?",
@@ -54,7 +60,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   });
 
   it('Should return "Invalid avatar_id"', async () => {
-    const res = await request(app).patch(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "",
       email: "",
       avatar_id: "1.2",
@@ -67,7 +73,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   });
 
   it('Should return "Invalid bio"', async () => {
-    const res = await request(app).patch(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "",
       email: "",
       bio: "as as as ?",
@@ -80,7 +86,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   });
 
   it('Should return "Invalid address"', async () => {
-    const res = await request(app).patch(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "",
       email: "",
       address: "asas?",
@@ -93,7 +99,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   });
 
   it('Should return "Invalid latlng"', async () => {
-    const res = await request(app).patch(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "",
       email: "",
       latlng: "10.12,asd",
@@ -106,7 +112,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   });
 
   it('Should return "Invalid timezone"', async () => {
-    const res = await request(app).patch(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "",
       email: "",
       timezone: "-a2",
@@ -118,11 +124,11 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
     );
   });
 
-  testAuth("patch", path);
+  testAuth(requestType, path);
 
   it('Should return "Nothing to update"', async () => {
     const res = await request(app)
-      .patch(path)
+      [requestType](path)
       .send({
         timezone: null,
       })
@@ -135,10 +141,10 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   });
 
   it('Should return "Profile updated exclude email"', async () => {
-    const before = await request(app).get(path).set("Authorization", token);
+    const beforeData = await getProfile(token);
 
     const res = await request(app)
-      .patch(path)
+      [requestType](path)
       .send({
         display_name: "display name edit",
         username: "usernameEdit",
@@ -148,10 +154,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
       })
       .set("Authorization", token);
 
-    const after = await request(app).get(path).set("Authorization", token);
-
-    const beforeData = JSON.parse(before.text);
-    const afterData = JSON.parse(after.text);
+    const afterData = await getProfile(token);
     const afterShould = {
       ...beforeData,
       display_name: "display name edit",
@@ -170,10 +173,10 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   });
 
   it('Should return "Profile updated include email"', async () => {
-    const before = await request(app).get(path).set("Authorization", token);
+    const beforeData = await getProfile(token);
 
     const res = await request(app)
-      .patch(path)
+      [requestType](path)
       .send({
         email: "edit-test@test.com",
         username: "usernameEdit",
@@ -181,10 +184,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
       })
       .set("Authorization", token);
 
-    const after = await request(app).get(path).set("Authorization", token);
-
-    const beforeData = JSON.parse(before.text);
-    const afterData = JSON.parse(after.text);
+    const afterData = await getProfile(token);
     const afterShould = {
       ...beforeData,
       email: "edit-test@test.com",
@@ -210,7 +210,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
     token = await getToken();
 
     const res = await request(app)
-      .patch(path)
+      [requestType](path)
       .send({
         email: "edit-test@test.com",
       })
@@ -226,7 +226,7 @@ describe(`Test Endpoint Profile, PATCH ${path}`, () => {
     token = await getToken();
 
     const res = await request(app)
-      .patch(path)
+      [requestType](path)
       .send({
         username: "usernameEdit",
         avatar_id: 211,

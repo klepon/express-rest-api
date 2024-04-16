@@ -2,6 +2,8 @@ const request = require("supertest");
 const app = require("../../../app");
 const pool = require("../../../database/pool");
 const { table } = require("../constant");
+const { getPath } = require("../../../util/util");
+const { userPath } = require("../router");
 
 const username = "12345678a_-";
 const password = "1aB!@#$%^&*()_-";
@@ -34,4 +36,11 @@ exports.getToken = async () => {
     password,
   });
   return JSON.parse(res.text).token;
+};
+
+exports.getProfile = async (token) => {
+  const user = await request(app)
+    .get(getPath(userPath, userPath.profile))
+    .set("Authorization", token);
+  return JSON.parse(user.text);
 };

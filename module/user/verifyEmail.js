@@ -29,7 +29,7 @@ exports.verifyEmail = async (req, res, next) => {
       throwError(400, "Verify email", "Email verified fail");
     }
 
-    res.status(200).json("Email verified successfully");
+    res.status(200).send("Email verified successfully");
   } catch (error) {
     next(error);
   }

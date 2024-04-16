@@ -6,14 +6,15 @@ const { getPath } = require("../../../util/util");
 const { userPath } = require("../router");
 
 const path = getPath(userPath, userPath.register);
+const requestType = "post";
 
-describe(`Test Endpoint Register, POST ${path}`, () => {
+describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
   before(async () => {
     await removeTestUserData();
   });
 
   it('Should return "Missings display_name"', async () => {
-    const res = await request(app).post(path).send({
+    const res = await request(app)[requestType](path).send({
       email: "test@test.com",
       username: "12345678a_-",
       password: "1aB!@#$%^&*()_-",
@@ -26,7 +27,7 @@ describe(`Test Endpoint Register, POST ${path}`, () => {
   });
 
   it('Should return "Missings email"', async () => {
-    const res = await request(app).post(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: " ",
       username: "12345678a_-",
@@ -40,7 +41,7 @@ describe(`Test Endpoint Register, POST ${path}`, () => {
   });
 
   it('Should return "Missings username"', async () => {
-    const res = await request(app).post(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "test@test.com",
       username: " ",
@@ -54,7 +55,7 @@ describe(`Test Endpoint Register, POST ${path}`, () => {
   });
 
   it('Should return "Missings password"', async () => {
-    const res = await request(app).post(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "test@test.com",
       username: "12345678a_-",
@@ -67,7 +68,7 @@ describe(`Test Endpoint Register, POST ${path}`, () => {
   });
 
   it('Should return "Invalid display_name"', async () => {
-    const res = await request(app).post(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "display @name",
       email: "test@test.com",
       username: "12345678a_-",
@@ -81,7 +82,7 @@ describe(`Test Endpoint Register, POST ${path}`, () => {
   });
 
   it('Should return "Invalid email"', async () => {
-    const res = await request(app).post(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "test@te@st.com",
       username: "12345678a_-",
@@ -95,7 +96,7 @@ describe(`Test Endpoint Register, POST ${path}`, () => {
   });
 
   it('Should return "Invalid username"', async () => {
-    const res = await request(app).post(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "test@test.com",
       username: "1234a_-",
@@ -109,7 +110,7 @@ describe(`Test Endpoint Register, POST ${path}`, () => {
   });
 
   it('Should return "Invalid password"', async () => {
-    const res = await request(app).post(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "test@test.com",
       username: "12345678a_-",
@@ -129,7 +130,7 @@ describe(`Test Endpoint Register, POST ${path}`, () => {
   });
 
   it('Should return "Email already exist"', async () => {
-    const res = await request(app).post(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "test@test.com",
       username: "12345678a_-",
@@ -143,7 +144,7 @@ describe(`Test Endpoint Register, POST ${path}`, () => {
   });
 
   it('Should return "Username already exist"', async () => {
-    const res = await request(app).post(path).send({
+    const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "atest@test.com",
       username: "12345678a_-",
