@@ -2,54 +2,25 @@ const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
 const { removeTestUserData, createTestUserData, getToken } = require("./util");
+const { testAuth } = require("../../../util/testAuth");
+const { getPath } = require("../../../util/util");
+const { userPath } = require("../router");
 
+const path = getPath(userPath, userPath.profile);
 let token = "";
 
-describe("Test Endpoint GET Profile /user/profile", () => {
+describe(`Test Endpoint Profile, GET ${path}`, () => {
   before(async () => {
     await removeTestUserData();
     await createTestUserData();
     token = await getToken();
   });
 
-  it('Should return "Missing token"', async () => {
-    const res = await request(app).get("/user/profile");
-    assert.equal(res.status, 401);
-    assert.equal(
-      res.text,
-      '{"detail":"Unauthorized","service":"AuthToken no token"}'
-    );
-  });
-
-  it('Should return "Token expired"', async () => {
-    const res = await request(app)
-      .get("/user/profile")
-      .set(
-        "Authorization",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWlkIjoiYjg4MTE3NDEtMzU4OS00NGRmLWIzNTItYmM2YTdmYjk3YThhIiwiaWF0IjoxNzEzMTk1NTgxLCJleHAiOjE3MTMxOTU1ODB9.CEBGjisp6DOiBy6v0_9IbDoOyNsAO-NbttX7jfyRzf0"
-      );
-
-    assert.equal(res.status, 403);
-    assert.equal(
-      res.text,
-      `{"detail":"Forbidden","service":"AuthToken expired"}`
-    );
-  });
-
-  it('Should return "Invalid token"', async () => {
-    const res = await request(app)
-      .get("/user/profile")
-      .set("Authorization", "invalidToken");
-    assert.equal(res.status, 403);
-    assert.equal(
-      res.text,
-      '{"detail":"Forbidden","service":"AuthToken invalid"}'
-    );
-  });
+  testAuth("get", path);
 
   it('Should return "User not found"', async () => {
     const res = await request(app)
-      .get("/user/profile")
+      .get(path)
       .set(
         "Authorization",
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWlkIjoiMGZjM2U2NWEtZWMzZC00ZDQ4LWEyZDYtZGM0YjQ1ZDQ4YWI0IiwiaWF0IjoxNzEzMTM4NDgyLCJleHAiOjE3MTM3NDMyODJ9.-Hs4d8iXLor4IkdgIR0NLDd3RlZVLIFAnQFm26sA1-0"
@@ -60,7 +31,7 @@ describe("Test Endpoint GET Profile /user/profile", () => {
 
   it('Should return "Profile"', async () => {
     const res = await request(app)
-      .get("/user/profile")
+      .get(path)
       .set("Authorization", token);
     const test = Object.keys(JSON.parse(res.text));
     const keys = [

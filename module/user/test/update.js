@@ -2,10 +2,14 @@ const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
 const { removeTestUserData, createTestUserData, getToken } = require("./util");
+const { testAuth } = require("../../../util/testAuth");
+const { getPath } = require("../../../util/util");
+const { userPath } = require("../router");
 
+const path = getPath(userPath, userPath.profile);
 let token = "";
 
-describe("Test Endpoint PATCH Profile /user/profile", () => {
+describe(`Test Endpoint Profile, PATCH ${path}`, () => {
   before(async () => {
     await removeTestUserData();
     await createTestUserData();
@@ -13,7 +17,7 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
   });
 
   it('Should return "Invalid display_name"', async () => {
-    const res = await request(app).patch("/user/profile").send({
+    const res = await request(app).patch(path).send({
       display_name: "asd?",
       email: "test@test.com.net",
     });
@@ -25,7 +29,7 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
   });
 
   it('Should return "Invalid email"', async () => {
-    const res = await request(app).patch("/user/profile").send({
+    const res = await request(app).patch(path).send({
       display_name: "asd _-",
       email: "test@test.com.net.id",
     });
@@ -37,7 +41,7 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
   });
 
   it('Should return "Invalid username"', async () => {
-    const res = await request(app).patch("/user/profile").send({
+    const res = await request(app).patch(path).send({
       display_name: "",
       email: "",
       username: "12345678?",
@@ -50,7 +54,7 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
   });
 
   it('Should return "Invalid avatar_id"', async () => {
-    const res = await request(app).patch("/user/profile").send({
+    const res = await request(app).patch(path).send({
       display_name: "",
       email: "",
       avatar_id: "1.2",
@@ -63,7 +67,7 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
   });
 
   it('Should return "Invalid bio"', async () => {
-    const res = await request(app).patch("/user/profile").send({
+    const res = await request(app).patch(path).send({
       display_name: "",
       email: "",
       bio: "as as as ?",
@@ -76,7 +80,7 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
   });
 
   it('Should return "Invalid address"', async () => {
-    const res = await request(app).patch("/user/profile").send({
+    const res = await request(app).patch(path).send({
       display_name: "",
       email: "",
       address: "asas?",
@@ -89,7 +93,7 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
   });
 
   it('Should return "Invalid latlng"', async () => {
-    const res = await request(app).patch("/user/profile").send({
+    const res = await request(app).patch(path).send({
       display_name: "",
       email: "",
       latlng: "10.12,asd",
@@ -102,7 +106,7 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
   });
 
   it('Should return "Invalid timezone"', async () => {
-    const res = await request(app).patch("/user/profile").send({
+    const res = await request(app).patch(path).send({
       display_name: "",
       email: "",
       timezone: "-a2",
@@ -114,44 +118,11 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
     );
   });
 
-  it('Should return "Missing token"', async () => {
-    const res = await request(app).patch("/user/profile").send({});
-    assert.equal(res.status, 401);
-    assert.equal(
-      res.text,
-      `{"detail":"Unauthorized","service":"AuthToken no token"}`
-    );
-  });
-
-  it('Should return "Token expired"', async () => {
-    const res = await request(app)
-      .patch("/user/profile")
-      .set(
-        "Authorization",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWlkIjoiYjg4MTE3NDEtMzU4OS00NGRmLWIzNTItYmM2YTdmYjk3YThhIiwiaWF0IjoxNzEzMTk1NTgxLCJleHAiOjE3MTMxOTU1ODB9.CEBGjisp6DOiBy6v0_9IbDoOyNsAO-NbttX7jfyRzf0"
-      );
-
-    assert.equal(res.status, 403);
-    assert.equal(
-      res.text,
-      `{"detail":"Forbidden","service":"AuthToken expired"}`
-    );
-  });
-
-  it('Should return "Invalid token"', async () => {
-    const res = await request(app)
-      .patch("/user/profile")
-      .set("Authorization", "invalidToken");
-    assert.equal(res.status, 403);
-    assert.equal(
-      res.text,
-      `{"detail":"Forbidden","service":"AuthToken invalid"}`
-    );
-  });
+  testAuth("patch", path);
 
   it('Should return "Nothing to update"', async () => {
     const res = await request(app)
-      .patch("/user/profile")
+      .patch(path)
       .send({
         timezone: null,
       })
@@ -164,12 +135,10 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
   });
 
   it('Should return "Profile updated exclude email"', async () => {
-    const before = await request(app)
-      .get("/user/profile")
-      .set("Authorization", token);
+    const before = await request(app).get(path).set("Authorization", token);
 
     const res = await request(app)
-      .patch("/user/profile")
+      .patch(path)
       .send({
         display_name: "display name edit",
         username: "usernameEdit",
@@ -179,25 +148,32 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
       })
       .set("Authorization", token);
 
-    const after = await request(app)
-      .get("/user/profile")
-      .set("Authorization", token);
+    const after = await request(app).get(path).set("Authorization", token);
+
+    const beforeData = JSON.parse(before.text);
+    const afterData = JSON.parse(after.text);
+    const afterShould = {
+      ...beforeData,
+      display_name: "display name edit",
+      username: "usernameEdit",
+      bio: "asa",
+      timezone: "-12",
+    };
 
     assert.equal(res.status, 200);
     assert.equal(res.text, `User updated successfully`);
-    assert.equal(
-      JSON.parse(before.text).email_validation,
-      JSON.parse(after.text).email_validation
-    );
+    assert.notEqual(afterShould.update_at, afterData.update_at);
+
+    delete afterShould.update_at;
+    delete afterData.update_at;
+    assert.deepEqual(afterShould, afterData);
   });
 
   it('Should return "Profile updated include email"', async () => {
-    const before = await request(app)
-      .get("/user/profile")
-      .set("Authorization", token);
+    const before = await request(app).get(path).set("Authorization", token);
 
     const res = await request(app)
-      .patch("/user/profile")
+      .patch(path)
       .send({
         email: "edit-test@test.com",
         username: "usernameEdit",
@@ -205,16 +181,28 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
       })
       .set("Authorization", token);
 
-    const after = await request(app)
-      .get("/user/profile")
-      .set("Authorization", token);
+    const after = await request(app).get(path).set("Authorization", token);
+
+    const beforeData = JSON.parse(before.text);
+    const afterData = JSON.parse(after.text);
+    const afterShould = {
+      ...beforeData,
+      email: "edit-test@test.com",
+      username: "usernameEdit",
+      bio: "bio edit",
+    };
 
     assert.equal(res.status, 200);
     assert.equal(res.text, `User updated successfully`);
-    assert.notEqual(
-      JSON.parse(before.text).email_validation,
-      JSON.parse(after.text).email_validation
-    );
+    assert.equal(afterShould.email, afterData.email);
+    assert.notEqual(afterShould.email_validation, afterData.email_validation);
+    assert.notEqual(afterShould.update_at, afterData.update_at);
+
+    delete afterShould.update_at;
+    delete afterData.update_at;
+    delete afterShould.email_validation;
+    delete afterData.email_validation;
+    assert.deepEqual(afterShould, afterData);
   });
 
   it('Should return "Fail email exist"', async () => {
@@ -222,7 +210,7 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
     token = await getToken();
 
     const res = await request(app)
-      .patch("/user/profile")
+      .patch(path)
       .send({
         email: "edit-test@test.com",
       })
@@ -238,7 +226,7 @@ describe("Test Endpoint PATCH Profile /user/profile", () => {
     token = await getToken();
 
     const res = await request(app)
-      .patch("/user/profile")
+      .patch(path)
       .send({
         username: "usernameEdit",
         avatar_id: 211,

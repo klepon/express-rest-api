@@ -1,13 +1,15 @@
 const { execSync } = require("child_process");
 
-const runTests = (servicePath) => {
+const runTests = (argv) => {
   try {
-    execSync(`mocha module/${servicePath}/test`, { stdio: "inherit" });
+    execSync(`mocha module/${argv[2]}/test${argv[3] ? `/${argv[3]}.js` : ""}`, {
+      stdio: "inherit",
+    });
   } catch (error) {
     console.error("Error running tests:", error);
     process.exit(1);
   }
 };
 
-const servicePath = process.argv.pop();
-runTests(servicePath);
+const argv = process.argv;
+runTests(argv);

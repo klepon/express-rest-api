@@ -9,7 +9,7 @@ const {
   userHistoryTable,
   userDeletionSchedule,
 } = require("./module/user/table.js");
-const { userOnFinish, userRoutes } = require("./module/user/router.js");
+const { userOnFinish, userRoutes, userPath } = require("./module/user/router.js");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use(userOnFinish);
 
 // route
-app.use("/user", userRoutes);
+app.use(userPath.main, userRoutes);
 
 // handle error route
 app.use((_req, res, _next) => {

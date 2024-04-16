@@ -1,10 +1,12 @@
 # Test case
 
-- test per route, not per service
+- test per route, not per middleware
 - valid doc for available response for each route
 - install mocha global if error mocha not found
 - run with  
-  `$ npm test user`
+  `$ npm test {service name}`  
+  or individual test file
+  `$ npm test {service name} {filename without extension}`
 
 ## Service
 
@@ -61,15 +63,18 @@
 
 ### request email verification code
 
-- invalid or missing token
-- fail, email already validate
+- missing token
+- token expired
+- invalid token
 - verification code sent
+- email already validate
 
 ### verify email address
 
 - missing on validate code
 - invalid on validate code
 - missing token
+- token expired
 - invalid token
 - email verification fail
 - email already validate
@@ -78,6 +83,7 @@
 ### delete profile
 
 - missing token
+- token expired
 - invalid token
 - user not found
 - user added to deletion schedule

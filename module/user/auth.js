@@ -17,7 +17,7 @@ exports.createJwtToken = (payload) => {
 */
 exports.authToken = (req, _res, next) => {
   const token = req.headers["authorization"];
-  if (!token) throwError(401, "AuthToken no token");
+  if (!token) throwError(401, "AuthToken missing");
 
   jwt.verify(token, process.env.LOGIN_JWT_SECRET, (err, data) => {
     if (err) {

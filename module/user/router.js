@@ -26,17 +26,26 @@ if (process.env.LOGIN_JWT_SECRET.length < 512) {
   );
 }
 
+exports.userPath = {
+  main: "/user",
+  register: "/register",
+  login: "/login",
+  profile: "/profile",
+  requestEmailVerificationCode: "/request-email-verification-code",
+  verifyEmail: "/verify-email",
+};
+
 const onFinish = express.Router();
 onFinish.use(userOnFinish);
 // todo update history, on update and on delete, on validate email??
 
 const router = express.Router();
-router.post("/register", registerData, inputValidation, createUser);
-router.post("/login", loginData, inputValidation, login);
-router.get("/profile", authToken, readUser, profile);
-router.delete("/profile", authToken, removeUser)
+router.post(this.userPath.register, registerData, inputValidation, createUser);
+router.post(this.userPath.login, loginData, inputValidation, login);
+router.get(this.userPath.profile, authToken, readUser, profile);
+router.delete(this.userPath.profile, authToken, removeUser);
 router.patch(
-  "/profile",
+  this.userPath.profile,
   updateData,
   inputValidation,
   authToken,
@@ -44,13 +53,13 @@ router.patch(
   updateUser
 );
 router.get(
-  "/request-email-verification-code",
+  this.userPath.requestEmailVerificationCode,
   authToken,
   readUser,
   sendEmailVerificationCode
 );
 router.patch(
-  "/verify-email",
+  this.userPath.verifyEmail,
   verifyEmailData,
   inputValidation,
   authToken,

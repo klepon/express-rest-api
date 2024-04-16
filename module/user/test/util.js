@@ -8,10 +8,10 @@ const password = "1aB!@#$%^&*()_-";
 
 exports.removeTestUserData = async () => {
   try {
-    await pool.query(`DELETE FROM ${table.user} WHERE email = $1 OR email = $2`, [
-      "test@test.com",
-      "edit-test@test.com",
-    ]);
+    await pool.query(
+      `DELETE FROM ${table.user} WHERE email = $1 OR email = $2`,
+      ["test@test.com", "edit-test@test.com"]
+    );
   } catch (_err) {}
 };
 

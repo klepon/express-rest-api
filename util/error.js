@@ -77,5 +77,5 @@ exports.newError = (code, service, error) => {
 };
 
 exports.throwError = (code, service, error) => {
-  throw exports.newError(code, service, error);
+  throw this.newError(code, service, error);
 };

@@ -2,14 +2,18 @@ const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
 const { removeTestUserData, createTestUserData } = require("./util");
+const { getPath } = require("../../../util/util");
+const { userPath } = require("../router");
 
-describe("Test Endpoint POST Register /user/register", () => {
+const path = getPath(userPath, userPath.register);
+
+describe(`Test Endpoint Register, POST ${path}`, () => {
   before(async () => {
     await removeTestUserData();
   });
 
   it('Should return "Missings display_name"', async () => {
-    const res = await request(app).post("/user/register").send({
+    const res = await request(app).post(path).send({
       email: "test@test.com",
       username: "12345678a_-",
       password: "1aB!@#$%^&*()_-",
@@ -22,7 +26,7 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   it('Should return "Missings email"', async () => {
-    const res = await request(app).post("/user/register").send({
+    const res = await request(app).post(path).send({
       display_name: "display name",
       email: " ",
       username: "12345678a_-",
@@ -36,7 +40,7 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   it('Should return "Missings username"', async () => {
-    const res = await request(app).post("/user/register").send({
+    const res = await request(app).post(path).send({
       display_name: "display name",
       email: "test@test.com",
       username: " ",
@@ -50,7 +54,7 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   it('Should return "Missings password"', async () => {
-    const res = await request(app).post("/user/register").send({
+    const res = await request(app).post(path).send({
       display_name: "display name",
       email: "test@test.com",
       username: "12345678a_-",
@@ -63,7 +67,7 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   it('Should return "Invalid display_name"', async () => {
-    const res = await request(app).post("/user/register").send({
+    const res = await request(app).post(path).send({
       display_name: "display @name",
       email: "test@test.com",
       username: "12345678a_-",
@@ -77,7 +81,7 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   it('Should return "Invalid email"', async () => {
-    const res = await request(app).post("/user/register").send({
+    const res = await request(app).post(path).send({
       display_name: "display name",
       email: "test@te@st.com",
       username: "12345678a_-",
@@ -91,7 +95,7 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   it('Should return "Invalid username"', async () => {
-    const res = await request(app).post("/user/register").send({
+    const res = await request(app).post(path).send({
       display_name: "display name",
       email: "test@test.com",
       username: "1234a_-",
@@ -105,7 +109,7 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   it('Should return "Invalid password"', async () => {
-    const res = await request(app).post("/user/register").send({
+    const res = await request(app).post(path).send({
       display_name: "display name",
       email: "test@test.com",
       username: "12345678a_-",
@@ -125,7 +129,7 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   it('Should return "Email already exist"', async () => {
-    const res = await request(app).post("/user/register").send({
+    const res = await request(app).post(path).send({
       display_name: "display name",
       email: "test@test.com",
       username: "12345678a_-",
@@ -139,7 +143,7 @@ describe("Test Endpoint POST Register /user/register", () => {
   });
 
   it('Should return "Username already exist"', async () => {
-    const res = await request(app).post("/user/register").send({
+    const res = await request(app).post(path).send({
       display_name: "display name",
       email: "atest@test.com",
       username: "12345678a_-",
