@@ -56,8 +56,9 @@ exports.userHistoryTable = async () => {
         "hid SERIAL PRIMARY KEY",
         "uid INTEGER",
         "update_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-        "before VARCHAR(255) NOT NULL",
-        "after VARCHAR(255) UNIQUE NOT NULL",
+        "key VARCHAR(50)",
+        "before VARCHAR(255)",
+        "after VARCHAR(255)",
       ],
     });
   } catch (error) {
@@ -73,7 +74,7 @@ exports.userDeletionSchedule = async () => {
       tableName: table.schedule,
       coloumn: [
         "sid SERIAL PRIMARY KEY",
-        "puid UUID",
+        "uid INTEGER",
         "delete_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
       ],
     });

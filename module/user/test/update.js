@@ -6,6 +6,9 @@ const {
   createTestUserData,
   getToken,
   getProfile,
+  email,
+  emailEdit,
+  username,
 } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
 const { getPath } = require("../../../util/util");
@@ -25,8 +28,8 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
   it('Should return "Invalid display_name"', async () => {
     const res = await request(app)[requestType](path).send({
       display_name: "asd?",
-      email: "test@test.com.net",
-      username: "username",
+      email,
+      username,
       avatar_id: 123,
       bio: "my bio here - ",
       address: "jala kertalangu 1-x",
@@ -43,8 +46,8 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
   it('Should return "Invalid email"', async () => {
     const res = await request(app)[requestType](path).send({
       display_name: "asd _-",
-      email: "test@test.com.net.id",
-      username: "username",
+      email: "invalid@maijima.com.net.id",
+      username,
       avatar_id: 123,
       bio: "my bio here - ",
       address: "jala kertalangu 1-x",
@@ -190,7 +193,7 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)
       [requestType](path)
       .send({
-        email: "edit-test@test.com",
+        email: emailEdit,
         username: "usernameEdit",
         bio: "bio edit",
       })
@@ -199,7 +202,7 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
     const afterData = await getProfile(token);
     const afterShould = {
       ...beforeData,
-      email: "edit-test@test.com",
+      email: emailEdit,
       username: "usernameEdit",
       bio: "bio edit",
     };
@@ -224,13 +227,13 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)
       [requestType](path)
       .send({
-        email: "edit-test@test.com",
+        email: emailEdit,
       })
       .set("Authorization", token);
     assert.equal(res.status, 500);
     assert.equal(
       res.text,
-      '{"detail":"Key (email)=(edit-test@test.com) already exists.","service":"App catch error","code":"23505"}'
+      `{"detail":"Key (email)=(${emailEdit}) already exists.","service":"App catch error","code":"23505"}`
     );
   });
 

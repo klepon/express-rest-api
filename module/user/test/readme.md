@@ -85,5 +85,5 @@
 - missing token
 - token expired
 - invalid token
-- fail deleting user
+- user not found
 - user added to deletion schedule

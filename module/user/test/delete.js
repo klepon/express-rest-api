@@ -25,17 +25,12 @@ describe(`Test Endpoint Verify email address, ${requestType.toUpperCase()} ${pat
 
   testAuth(requestType, path);
 
-  it('Should return "Fail deleting user"', async () => {
+  it('Should return "User not found"', async () => {
     const res = await request(app)
       [requestType](path)
       .set("Authorization", nonExistPuidToken);
-    assert.equal(res.status, 400);
-    assert.ok(
-      [
-        '{"detail":"Fail deleting user","service":"Remove user"}',
-        '{"detail":"Fail scheduling delete user","service":"Remove user"}',
-      ].includes(res.text)
-    );
+    assert.equal(res.status, 404);
+    assert.equal(res.text, `{"detail":"User not found","service":"Read user"}`);
   });
 
   it('Should return "User added to deletion schedule"', async () => {
@@ -46,14 +41,11 @@ describe(`Test Endpoint Verify email address, ${requestType.toUpperCase()} ${pat
     assert.equal(res.text, "User will be deleted in 28 days");
   });
 
-  afterEach(async () => {
+  after(async () => {
     const user = await getProfile(token);
     if (user) {
-      await removeTestScheduleData(user.puid);
+      await removeTestScheduleData(user.uid);
     }
-  });
-
-  after(async () => {
     await removeTestUserData();
   });
 });

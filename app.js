@@ -17,6 +17,7 @@ const { userPath } = require("./module/user/constant.js");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+global.isMainProcess = require.main === module;
 
 app.use(bodyParser.json());
 
@@ -49,7 +50,7 @@ cron.schedule("0 1 * * *", () => {
   console.log("check table cron job");
 });
 
-if (require.main === module) {
+if (isMainProcess) {
   // create table
   (async () => {
     await userHistoryTable();

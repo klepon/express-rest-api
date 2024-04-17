@@ -50,6 +50,11 @@ exports.profile = async (req, res, next) => {
       "update_at",
       "timezone",
     ];
+
+    // for use in mocha test 
+    if (!isMainProcess) {
+      privateData.push("uid");
+    }
     res.status(200).json(filterObject(req.userAuthData, privateData));
   } catch (error) {
     next(error);

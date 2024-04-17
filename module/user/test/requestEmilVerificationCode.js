@@ -6,10 +6,12 @@ const {
   createTestUserData,
   getToken,
   getProfile,
+  email,
 } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
 const { userPath } = require("../constant");
 const { getPath } = require("../../../util/util");
+const { maskEmail } = require("../../../util/maskEmail");
 
 const path = getPath(userPath, userPath.requestEmailVerificationCode);
 const requestType = "get";
@@ -27,7 +29,7 @@ describe(`Test Endpoint Request email verification code, ${requestType.toUpperCa
   it('Should return "Verification code sent"', async () => {
     const res = await request(app)[requestType](path).set("Authorization", token);
     assert.equal(res.status, 200);
-    assert.equal(res.text, "tes*@test.com");
+    assert.equal(res.text, maskEmail(email));
   });
 
   it('Should return "Email already validate"', async () => {

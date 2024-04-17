@@ -7,10 +7,12 @@ const { userPath } = require("../constant");
 
 exports.username = "12345678a_-";
 exports.password = "1aB!@# $%^&*()_-";
+exports.email = "test@maijima.com";
+exports.emailEdit = "edit-test@maijima.com";
 
-exports.removeTestScheduleData = async (puid) => {
+exports.removeTestScheduleData = async (uid) => {
   try {
-    await pool.query(`DELETE FROM ${table.schedule} WHERE puid = $1`, [puid]);
+    await pool.query(`DELETE FROM ${table.schedule} WHERE uid = $1`, [uid]);
   } catch (_err) {}
 };
 
@@ -18,7 +20,7 @@ exports.removeTestUserData = async () => {
   try {
     await pool.query(
       `DELETE FROM ${table.user} WHERE email = $1 OR email = $2`,
-      ["test@test.com", "edit-test@test.com"]
+      [this.email, this.emailEdit]
     );
   } catch (_err) {}
 };
@@ -27,7 +29,7 @@ exports.createTestUserData = async () => {
   try {
     return await request(app).post("/user/register").send({
       display_name: "display name",
-      email: "test@test.com",
+      email: this.email,
       username: this.username,
       password: this.password,
     });

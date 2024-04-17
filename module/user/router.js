@@ -35,7 +35,7 @@ const router = express.Router();
 router.post(userPath.register, registerData, inputValidation, createUser);
 router.post(userPath.login, loginData, inputValidation, login);
 router.get(userPath.profile, authToken, readUser, profile);
-router.delete(userPath.profile, authToken, removeUser);
+router.delete(userPath.profile, authToken, readUser, removeUser);
 router.patch(
   userPath.profile,
   updateData,

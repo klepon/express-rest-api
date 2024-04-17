@@ -6,6 +6,7 @@ const {
   createTestUserData,
   username,
   password,
+  email,
 } = require("./util");
 const { getPath } = require("../../../util/util");
 const { userPath } = require("../constant");
@@ -20,7 +21,7 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
 
   it('Should return "Missings display_name"', async () => {
     const res = await request(app)[requestType](path).send({
-      email: "test@test.com",
+      email,
       username,
       password,
     });
@@ -48,7 +49,7 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
   it('Should return "Missings username"', async () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
-      email: "test@test.com",
+      email,
       username: " ",
       password,
     });
@@ -62,7 +63,7 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
   it('Should return "Missings password"', async () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
-      email: "test@test.com",
+      email,
       username,
     });
     assert.equal(res.status, 400);
@@ -75,7 +76,7 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
   it('Should return "Invalid display_name"', async () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display @name",
-      email: "test@test.com",
+      email,
       username,
       password,
     });
@@ -103,7 +104,7 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
   it('Should return "Invalid username"', async () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
-      email: "test@test.com",
+      email,
       username: "1234a_-",
       password,
     });
@@ -117,7 +118,7 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
   it('Should return "Invalid password"', async () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
-      email: "test@test.com",
+      email,
       username,
       password: "1a!@#$%^&*()_-",
     });
@@ -137,28 +138,28 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
   it('Should return "Email already exist"', async () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
-      email: "test@test.com",
+      email,
       username,
       password,
     });
     assert.equal(res.status, 500);
     assert.equal(
       res.text,
-      '{"detail":"Key (email)=(test@test.com) already exists.","service":"App catch error","code":"23505"}'
+      `{"detail":"Key (email)=(${email}) already exists.","service":"App catch error","code":"23505"}`
     );
   });
 
   it('Should return "Username already exist"', async () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
-      email: "atest@test.com",
+      email: "some-email@maijima.com",
       username,
       password,
     });
     assert.equal(res.status, 500);
     assert.equal(
       res.text,
-      '{"detail":"Key (username)=(12345678a_-) already exists.","service":"App catch error","code":"23505"}'
+      `{"detail":"Key (username)=(${username}) already exists.","service":"App catch error","code":"23505"}`
     );
   });
 
