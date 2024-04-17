@@ -1,5 +1,9 @@
 const { throwError } = require("./error");
 
+const trimSpace = (text) => {
+  return typeof text === "string" ? text.trim() : text;
+};
+
 /**
  * alphanumeric
  * [_-]
@@ -11,25 +15,25 @@ const userName = (text) => {
   const regexString = `^[a-zA-Z0-9_-]{${minLength},50}$`;
   const regex = new RegExp(regexString);
   if (!regex.test(text)) {
-    return false;
+    return [false, null];
   }
-  return true;
+  return [true, text];
 };
 
 /** use for global name like display name, role name, group name, etc
  * alphanumeric
- * [s_-]
+ * [ _-]
  * VALIDATION_USERNAME_MIN_CHAR || 4
  * max char 50
  */
 const displayName = (text) => {
   const minLength = process.env.VALIDATION_DISPLAYNAME_MIN_CHAR || 4;
-  const regexString = `^[a-zA-Z0-9\\s_-]{${minLength},50}$`;
+  const regexString = `^[a-zA-Z0-9 _-]{${minLength},50}$`;
   const regex = new RegExp(regexString);
   if (!regex.test(text)) {
-    return false;
+    return [false, null];
   }
-  return true;
+  return [true, trimSpace(text)];
 };
 
 /**
@@ -56,40 +60,51 @@ const email = (text) => {
   const regexString = `^[a-zA-Z0-9]{2,}(?:[${allowedSpecialCharInEmail}]{0,1}[a-zA-Z0-9]+)*@(?:[a-zA-Z0-9]+(?:[${allowedSpecialCharInDomain}]{0,1}[a-zA-Z0-9]+)*\\.){1,${maxSubDomainDeep}}[a-zA-Z]{2,}$`;
   const regex = new RegExp(regexString);
   if (!regex.test(text) || text.length > 100) {
-    return false;
+    return [false, null];
   }
-  return true;
+  return [true, text];
 };
 
 /**
- * min 1 of each lowercase, uppercase, number, [!@#$%^&*()_-]
+ * min 1 of each lowercase, uppercase, number, space or [!@#$%^&*()_-]
  * min char VALIDATION_PASSWORD_MIN_CHAR || 8
  * max char 255
  */
 const password = (text) => {
   const minLength = process.env.VALIDATION_PASSWORD_MIN_CHAR || 8;
-  const regexString = `^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_\\-])[a-zA-z0-9!@#$%^&*()_\\-]{${minLength},255}$`;
+  const regexString = `^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*() _-])[a-zA-Z0-9!@#$%^&*() _-]{${minLength},255}$`;
   const regex = new RegExp(regexString);
+
   if (!regex.test(text)) {
-    return false;
+    return [false, null];
   }
-  return true;
+  return [true, text];
 };
 
 /** use for any short desc like bio, status, comment, etc
- * alphanumeric, [\s.,-]]
+ * alphanumeric, [ .,-]
  * max char 255
  */
 const bio = (text) => {
-  return /^[a-zA-Z0-9\s.,-]{1,255}$/.test(text);
+  const regexString = "^[a-zA-Z0-9 .,-]{1,255}$";
+  const regex = new RegExp(regexString);
+  if (!regex.test(text)) {
+    return [false, null];
+  }
+  return [true, trimSpace(text)];
 };
 
 /**
- * alphanumeric, [\s.,]]
+ * alphanumeric, [ .,/-]
  * max char 255
  */
 const address = (text) => {
-  return /^[a-zA-Z0-9\s.,]{1,255}$/.test(text);
+  const regexString = "^[a-zA-Z0-9 .,/-]{1,255}$";
+  const regex = new RegExp(regexString);
+  if (!regex.test(text)) {
+    return [false, null];
+  }
+  return [true, trimSpace(text)];
 };
 
 /**
@@ -97,37 +112,51 @@ const address = (text) => {
  * max char 30
  */
 const latlng = (text) => {
-  return /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/.test(text) && text.length <= 30;
+  const regexString = "^(-?\\d+(\\.\\d+)?),*(-?\\d+(\\.\\d+)?)$";
+  const regex = new RegExp(regexString);
+  if (!regex.test(text) && text.length <= 30) {
+    return [false, null];
+  }
+  return [true, text];
 };
 
 /**
  * 6 digit number
  */
 const code = (text) => {
-  return /^[0-9]{6,6}$/.test(text);
-};
-
-/** user for any config like permission
- * group of uppercase end with/without :
- * end with uppercase
- * max char 100
- */
-const permission = (text) => {
-  const regex = /^[A-Z]+(?::([A-Z]+|\\{[A-Z]+\\}))*$/;
-  if (!regex.test(text) || text.length > 100) {
-    return false;
+  const regexString = "^[0-9]{6,6}$";
+  const regex = new RegExp(regexString);
+  if (!regex.test(text)) {
+    return [false, null];
   }
-  return true;
+  return [true, text];
 };
 
 const uuidv4 = (text) => {
-  return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
-    text
-  );
+  const regexString =
+    "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
+  const regex = new RegExp(regexString);
+  if (!regex.test(text)) {
+    return [false, null];
+  }
+  return [true, text];
 };
 
 const timezone = (text) => {
-  return /^(\+|-)?([1-9]|1[0-4])$/.test(text);
+  const regexString = "^(\\+|-)?([1-9]|1[0-4])$";
+  const regex = new RegExp(regexString);
+  if (!regex.test(text)) {
+    return [false, null];
+  }
+  return [true, text];
+};
+
+const integer = (text) => {
+  return Number.isInteger(text) ? [true, Number.parseInt(text)] : [false, null];
+};
+
+const boolean = (text) => {
+  return typeof text === "boolean" ? [true, text] : [false, null];
 };
 
 const validate = (check, text) => {
@@ -142,10 +171,10 @@ const validate = (check, text) => {
     case "password":
       return password(text);
     case "is_blocked":
-      return typeof text === "boolean";
+      return boolean(text);
     case "avatar_id":
     case "uid":
-      return Number.isInteger(text);
+      return integer(text);
     case "bio":
       return bio(text);
     case "address":
@@ -154,14 +183,12 @@ const validate = (check, text) => {
       return latlng(text);
     case "code":
       return code(text);
-    case "permission":
-      return permission(text);
     case "puid":
       return uuidv4(text);
     case "timezone":
       return timezone(text);
   }
-  return true;
+  return [false, null];
 };
 
 /**
@@ -196,7 +223,6 @@ exports.inputValidation = (req, _res, next) => {
   };
 
   const setData = (prop, value) => {
-    // todo: sanitize value before added to data
     data[prop] = value;
   };
 
@@ -204,10 +230,14 @@ exports.inputValidation = (req, _res, next) => {
     for (const prop of req.optionalInputProps) {
       const value = getValue(prop);
 
-      if (value && !validate(prop, value)) {
+      if (!value) continue;
+
+      const [isValid, cleanValue] = validate(prop, value);
+
+      if (value && !isValid) {
         invalids.push(prop);
       } else {
-        setData(prop, value);
+        setData(prop, cleanValue);
       }
     }
   }
@@ -218,10 +248,13 @@ exports.inputValidation = (req, _res, next) => {
 
       if (!value) {
         missings.push(prop);
-      } else if (!validate(prop, value)) {
-        invalids.push(prop);
       } else {
-        setData(prop, value);
+        const [isValid, cleanValue] = validate(prop, value);
+        if (!isValid) {
+          invalids.push(prop);
+        } else {
+          setData(prop, cleanValue);
+        }
       }
     }
   }

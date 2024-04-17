@@ -5,8 +5,8 @@ const { table } = require("../constant");
 const { getPath } = require("../../../util/util");
 const { userPath } = require("../router");
 
-const username = "12345678a_-";
-const password = "1aB!@#$%^&*()_-";
+exports.username = "12345678a_-";
+exports.password = "1aB!@# $%^&*()_-";
 
 exports.removeTestScheduleData = async (puid) => {
   try {
@@ -28,8 +28,8 @@ exports.createTestUserData = async () => {
     return await request(app).post("/user/register").send({
       display_name: "display name",
       email: "test@test.com",
-      username,
-      password,
+      username: this.username,
+      password: this.password,
     });
   } catch (_err) {
     return;
@@ -38,8 +38,8 @@ exports.createTestUserData = async () => {
 
 exports.getToken = async () => {
   const res = await request(app).post("/user/login").send({
-    username,
-    password,
+    username: this.username,
+    password: this.password,
   });
   return JSON.parse(res.text).token;
 };

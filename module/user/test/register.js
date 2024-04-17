@@ -1,7 +1,12 @@
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
-const { removeTestUserData, createTestUserData } = require("./util");
+const {
+  removeTestUserData,
+  createTestUserData,
+  username,
+  password,
+} = require("./util");
 const { getPath } = require("../../../util/util");
 const { userPath } = require("../router");
 
@@ -16,8 +21,8 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
   it('Should return "Missings display_name"', async () => {
     const res = await request(app)[requestType](path).send({
       email: "test@test.com",
-      username: "12345678a_-",
-      password: "1aB!@#$%^&*()_-",
+      username,
+      password,
     });
     assert.equal(res.status, 400);
     assert.equal(
@@ -30,8 +35,8 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: " ",
-      username: "12345678a_-",
-      password: "1aB!@#$%^&*()_-",
+      username,
+      password,
     });
     assert.equal(res.status, 400);
     assert.equal(
@@ -45,7 +50,7 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
       display_name: "display name",
       email: "test@test.com",
       username: " ",
-      password: "1aB!@#$%^&*()_-",
+      password,
     });
     assert.equal(res.status, 400);
     assert.equal(
@@ -58,7 +63,7 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "test@test.com",
-      username: "12345678a_-",
+      username,
     });
     assert.equal(res.status, 400);
     assert.equal(
@@ -71,8 +76,8 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display @name",
       email: "test@test.com",
-      username: "12345678a_-",
-      password: "1aB!@#$%^&*()_-",
+      username,
+      password,
     });
     assert.equal(res.status, 400);
     assert.equal(
@@ -85,8 +90,8 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "test@te@st.com",
-      username: "12345678a_-",
-      password: "1aB!@#$%^&*()_-",
+      username,
+      password,
     });
     assert.equal(res.status, 400);
     assert.equal(
@@ -100,7 +105,7 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
       display_name: "display name",
       email: "test@test.com",
       username: "1234a_-",
-      password: "1aB!@#$%^&*()_-",
+      password,
     });
     assert.equal(res.status, 400);
     assert.equal(
@@ -113,7 +118,7 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "test@test.com",
-      username: "12345678a_-",
+      username,
       password: "1a!@#$%^&*()_-",
     });
     assert.equal(res.status, 400);
@@ -133,8 +138,8 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "test@test.com",
-      username: "12345678a_-",
-      password: "1aB!@#$%^&*()_-",
+      username,
+      password,
     });
     assert.equal(res.status, 500);
     assert.equal(
@@ -147,8 +152,8 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)[requestType](path).send({
       display_name: "display name",
       email: "atest@test.com",
-      username: "12345678a_-",
-      password: "1aB!@#$%^&*()_-",
+      username,
+      password,
     });
     assert.equal(res.status, 500);
     assert.equal(

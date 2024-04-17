@@ -26,6 +26,12 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)[requestType](path).send({
       display_name: "asd?",
       email: "test@test.com.net",
+      username: "username",
+      avatar_id: 123,
+      bio: "my bio here - ",
+      address: "jala kertalangu 1-x",
+      latlng: "-123.123,123.123",
+      timezone: "-12",
     });
     assert.equal(res.status, 400);
     assert.equal(
@@ -38,6 +44,12 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)[requestType](path).send({
       display_name: "asd _-",
       email: "test@test.com.net.id",
+      username: "username",
+      avatar_id: 123,
+      bio: "my bio here - ",
+      address: "jala kertalangu 1-x",
+      latlng: "-123.123,123.123",
+      timezone: "-12",
     });
     assert.equal(res.status, 400);
     assert.equal(
@@ -48,8 +60,6 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
 
   it('Should return "Invalid username"', async () => {
     const res = await request(app)[requestType](path).send({
-      display_name: "",
-      email: "",
       username: "12345678?",
     });
     assert.equal(res.status, 400);
@@ -149,7 +159,8 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
         display_name: "display name edit",
         username: "usernameEdit",
         avatar_id: null,
-        bio: "asa",
+        bio: "my bio is this-100",
+        address: "jalan dewi sartika, 120-x/2",
         timezone: "-12",
       })
       .set("Authorization", token);
@@ -159,7 +170,8 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
       ...beforeData,
       display_name: "display name edit",
       username: "usernameEdit",
-      bio: "asa",
+      bio: "my bio is this-100",
+      address: "jalan dewi sartika, 120-x/2",
       timezone: "-12",
     };
 

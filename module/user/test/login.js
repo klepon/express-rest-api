@@ -1,7 +1,12 @@
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
-const { removeTestUserData, createTestUserData } = require("./util");
+const {
+  removeTestUserData,
+  createTestUserData,
+  username,
+  password,
+} = require("./util");
 const { getPath } = require("../../../util/util");
 const { userPath } = require("../router");
 
@@ -16,8 +21,8 @@ describe(`Test Endpoint Login, ${requestType.toUpperCase()} ${path}`, () => {
 
   it('Should return "Auth Token"', async () => {
     const res = await request(app)[requestType](path).send({
-      username: "12345678a_-",
-      password: "1aB!@#$%^&*()_-",
+      username,
+      password,
     });
     const json = JSON.parse(res.text);
     assert.equal(res.status, 200);
