@@ -11,9 +11,9 @@
  * 400 fail
  */
 
-const pool = require("../../database/pool.js");
-const { throwError } = require("../../util/error.js");
-const { table, validEmailValue } = require("./constant.js");
+const pool = require("../../../database/pool.js");
+const { throwError } = require("../../../util/error.js");
+const { table, validEmailValue } = require("../constant.js");
 
 exports.verifyEmail = async (req, res, next) => {
   try {

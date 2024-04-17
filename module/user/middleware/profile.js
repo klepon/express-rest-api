@@ -24,8 +24,8 @@
   }
 */
 
-const { throwError } = require("../../util/error");
-const { filterObject } = require("../../util/filterObject");
+const { throwError } = require("../../../util/error");
+const { filterObject } = require("../../../util/filterObject");
 
 exports.profile = async (req, res, next) => {
   try {

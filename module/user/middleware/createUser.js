@@ -18,10 +18,10 @@
  */
 
 const bcrypt = require("bcrypt");
-const pool = require("../../database/pool");
-const { generateRandomNumber } = require("./util");
-const { throwError } = require("../../util/error");
-const { table, onFinishUser } = require("./constant");
+const pool = require("../../../database/pool");
+const { generateRandomNumber } = require("../util");
+const { throwError } = require("../../../util/error");
+const { table, onFinishUser } = require("../constant");
 
 exports.createUser = async (req, res, next) => {
   try {

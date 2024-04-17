@@ -8,7 +8,7 @@ const {
   password,
 } = require("./util");
 const { getPath } = require("../../../util/util");
-const { userPath } = require("../router");
+const { userPath } = require("../constant");
 
 const path = getPath(userPath, userPath.login);
 const requestType = "post";

@@ -5,7 +5,7 @@
  * object req.cleanData
  */
 
-const { onFinishUser } = require("./constant.js");
+const { onFinishUser } = require("../constant.js");
 const { sendEmailVerificationCode } = require("./sendEmailVerificationCode.js");
 
 exports.userOnFinish = async (req, res, next) => {

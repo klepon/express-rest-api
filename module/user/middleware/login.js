@@ -11,10 +11,10 @@
  */
 
 const bcrypt = require("bcrypt");
-const { table } = require("./constant.js");
-const { throwError } = require("../../util/error.js");
+const { table } = require("../constant.js");
+const { throwError } = require("../../../util/error.js");
 const { createJwtToken } = require("./auth.js");
-const pool = require("../../database/pool.js");
+const pool = require("../../../database/pool.js");
 
 exports.login = async (req, res, next) => {
   try {

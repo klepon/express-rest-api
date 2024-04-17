@@ -9,7 +9,11 @@ const {
   userHistoryTable,
   userDeletionSchedule,
 } = require("./module/user/table.js");
-const { userOnFinish, userRoutes, userPath } = require("./module/user/router.js");
+const {
+  userOnFinish,
+  userRoutes,
+} = require("./module/user/router.js");
+const { userPath } = require("./module/user/constant.js");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +45,7 @@ app.use((error, _req, res, _next) => {
 });
 
 cron.schedule("0 1 * * *", () => {
+  // todo delete user in schedule
   console.log("check table cron job");
 });
 

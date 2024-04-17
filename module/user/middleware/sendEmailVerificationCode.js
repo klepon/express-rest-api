@@ -16,10 +16,10 @@
   }
  */
 
-const { throwError } = require("../../util/error.js");
-const { sendEmail } = require("../../util/mailer.js");
-const { maskEmail } = require("../../util/maskEmail.js");
-const { validEmailValue } = require("./constant.js");
+const { throwError } = require("../../../util/error.js");
+const { sendEmail } = require("../../../util/mailer.js");
+const { maskEmail } = require("../../../util/maskEmail.js");
+const { validEmailValue } = require("../constant.js");
 
 exports.sendEmailVerificationCode = (req, res, next) => {
   try {

@@ -9,8 +9,8 @@ const {
   removeTestScheduleData,
 } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
-const { userPath } = require("../router");
-const { getPath, nonExistPuidToken } = require("../../../util/util");
+const { userPath, nonExistPuidToken } = require("../constant");
+const { getPath } = require("../../../util/util");
 
 const path = getPath(userPath, userPath.profile);
 const requestType = "delete";

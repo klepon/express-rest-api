@@ -1,20 +1,21 @@
 const express = require("express");
-const { registerData } = require("./registerData");
+const { registerData } = require("./input/registerData");
 const { inputValidation } = require("../../util/inputValidation");
-const { createUser } = require("./createUser");
-const { loginData } = require("./loginData");
-const { login } = require("./login");
-const { authToken } = require("./auth");
-const { readUser } = require("./readUser");
-const { profile } = require("./profile");
-const { updateUser } = require("./updateUser");
-const { updateData } = require("./updateData");
-const { sendEmailVerificationCode } = require("./sendEmailVerificationCode");
-const { userOnFinish } = require("./userOnFinish");
-const { verifyEmailData } = require("./verifyEmailData");
-const { verifyEmail } = require("./verifyEmail");
-const { removeUser } = require("./removeUser");
+const { createUser } = require("./middleware/createUser");
+const { loginData } = require("./input/loginData");
+const { login } = require("./middleware/login");
+const { authToken } = require("./middleware/auth");
+const { readUser } = require("./middleware/readUser");
+const { profile } = require("./middleware/profile");
+const { updateUser } = require("./middleware/updateUser");
+const { updateData } = require("./input/updateData");
+const { sendEmailVerificationCode } = require("./middleware/sendEmailVerificationCode");
+const { userOnFinish } = require("./middleware/userOnFinish");
+const { verifyEmailData } = require("./input/verifyEmailData");
+const { verifyEmail } = require("./middleware/verifyEmail");
+const { removeUser } = require("./middleware/removeUser");
 const { fatalError } = require("../../util/error");
+const { userPath } = require("./constant");
 
 // check envar for jwt token
 if (process.env.LOGIN_JWT_SECRET.length < 512) {
@@ -26,26 +27,17 @@ if (process.env.LOGIN_JWT_SECRET.length < 512) {
   );
 }
 
-exports.userPath = {
-  main: "/user",
-  register: "/register",
-  login: "/login",
-  profile: "/profile",
-  requestEmailVerificationCode: "/request-email-verification-code",
-  verifyEmail: "/verify-email",
-};
-
 const onFinish = express.Router();
 onFinish.use(userOnFinish);
 // todo update history, on update and on delete, on validate email??
 
 const router = express.Router();
-router.post(this.userPath.register, registerData, inputValidation, createUser);
-router.post(this.userPath.login, loginData, inputValidation, login);
-router.get(this.userPath.profile, authToken, readUser, profile);
-router.delete(this.userPath.profile, authToken, removeUser);
+router.post(userPath.register, registerData, inputValidation, createUser);
+router.post(userPath.login, loginData, inputValidation, login);
+router.get(userPath.profile, authToken, readUser, profile);
+router.delete(userPath.profile, authToken, removeUser);
 router.patch(
-  this.userPath.profile,
+  userPath.profile,
   updateData,
   inputValidation,
   authToken,
@@ -53,13 +45,13 @@ router.patch(
   updateUser
 );
 router.get(
-  this.userPath.requestEmailVerificationCode,
+  userPath.requestEmailVerificationCode,
   authToken,
   readUser,
   sendEmailVerificationCode
 );
 router.patch(
-  this.userPath.verifyEmail,
+  userPath.verifyEmail,
   verifyEmailData,
   inputValidation,
   authToken,

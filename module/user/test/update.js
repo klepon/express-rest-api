@@ -9,7 +9,7 @@ const {
 } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
 const { getPath } = require("../../../util/util");
-const { userPath } = require("../router");
+const { userPath } = require("../constant");
 
 const path = getPath(userPath, userPath.profile);
 const requestType = "patch";

@@ -14,10 +14,10 @@
  * - Fail updating user
  */
 
-const pool = require("../../database/pool");
-const { throwError } = require("../../util/error");
-const { table, onFinishUser } = require("./constant");
-const { generateRandomNumber } = require("./util");
+const pool = require("../../../database/pool");
+const { throwError } = require("../../../util/error");
+const { table, onFinishUser } = require("../constant");
+const { generateRandomNumber } = require("../util");
 
 exports.updateUser = async (req, res, next) => {
   try {

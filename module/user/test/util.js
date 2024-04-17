@@ -3,7 +3,7 @@ const app = require("../../../app");
 const pool = require("../../../database/pool");
 const { table } = require("../constant");
 const { getPath } = require("../../../util/util");
-const { userPath } = require("../router");
+const { userPath } = require("../constant");
 
 exports.username = "12345678a_-";
 exports.password = "1aB!@# $%^&*()_-";

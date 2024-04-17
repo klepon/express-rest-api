@@ -12,9 +12,9 @@
  * 500, Internal Server Error
 */
 
-const pool = require("../../database/pool");
-const { throwError } = require("../../util/error");
-const { table } = require("./constant");
+const pool = require("../../../database/pool");
+const { throwError } = require("../../../util/error");
+const { table } = require("../constant");
 
 
 exports.readUser = async (req, res, next) => {

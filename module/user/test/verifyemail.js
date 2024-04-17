@@ -8,7 +8,7 @@ const {
   getProfile,
 } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
-const { userPath } = require("../router");
+const { userPath } = require("../constant");
 const { getPath } = require("../../../util/util");
 
 const path = getPath(userPath, userPath.verifyEmail);

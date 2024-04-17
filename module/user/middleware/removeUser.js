@@ -12,9 +12,9 @@
  * 400, Fail deleting user
  */
 
-const pool = require("../../database/pool");
-const { throwError } = require("../../util/error");
-const { table, onFinishUser } = require("./constant");
+const pool = require("../../../database/pool");
+const { throwError } = require("../../../util/error");
+const { table, onFinishUser } = require("../constant");
 
 exports.removeUser = async (req, res, next) => {
   try {

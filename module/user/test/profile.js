@@ -3,8 +3,8 @@ const assert = require("assert");
 const app = require("../../../app");
 const { removeTestUserData, createTestUserData, getToken } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
-const { getPath, nonExistPuidToken } = require("../../../util/util");
-const { userPath } = require("../router");
+const { getPath } = require("../../../util/util");
+const { userPath, nonExistPuidToken } = require("../constant");
 
 const path = getPath(userPath, userPath.profile);
 const requestType = "get";
