@@ -1,26 +1,20 @@
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
-const {
-  removeTestUserData,
-  createTestUserData,
-  getToken,
-  getProfile,
-  removeTestScheduleData,
-} = require("./util");
+const { prepareTestUserdata } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
 const { userPath, nonExistPuidToken } = require("../constant");
 const { getPath } = require("../../../util/util");
+const { deleteUserRecord } = require("../middleware/deleteUserRecord");
 
 const path = getPath(userPath, userPath.profile);
 const requestType = "delete";
-let token = "";
+let token;
+let uid;
 
 describe(`Test Endpoint Verify email address, ${requestType.toUpperCase()} ${path}`, () => {
   before(async () => {
-    await removeTestUserData();
-    await createTestUserData();
-    token = await getToken();
+    [token, uid] = await prepareTestUserdata();
   });
 
   testAuth(requestType, path);
@@ -42,10 +36,6 @@ describe(`Test Endpoint Verify email address, ${requestType.toUpperCase()} ${pat
   });
 
   after(async () => {
-    const user = await getProfile(token);
-    if (user) {
-      await removeTestScheduleData(user.uid);
-    }
-    await removeTestUserData();
+    await deleteUserRecord(uid);
   });
 });

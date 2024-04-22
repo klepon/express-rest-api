@@ -29,7 +29,6 @@ if (process.env.LOGIN_JWT_SECRET.length < 512) {
 
 const onFinish = express.Router();
 onFinish.use(userOnFinish);
-// todo update history, on update and on delete, on validate email??
 
 const router = express.Router();
 router.post(userPath.register, registerData, inputValidation, createUser);
@@ -58,6 +57,7 @@ router.patch(
   readUser,
   verifyEmail
 );
+// todo get history
 
 exports.userRoutes = router;
 exports.userOnFinish = onFinish;

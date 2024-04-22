@@ -14,15 +14,18 @@
  }
  * passing:
  * object req.inputToValidate
+ * array req.optionalNoEmptyInputProps
  * array req.optionalInputProps
  */
 
 exports.updateData = async (req, _res, next) => {
   req.inputToValidate = req.body;
-  req.optionalInputProps = [
+  req.optionalNoEmptyInputProps = [
     "display_name",
     "email",
     "username",
+  ];
+  req.optionalInputProps = [
     "avatar_id",
     "bio",
     "address",

@@ -1,24 +1,15 @@
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
-const {
-  removeTestUserData,
-  createTestUserData,
-  username,
-  password,
-  email,
-} = require("./util");
+const { username, password, email } = require("./util");
 const { getPath } = require("../../../util/util");
-const { userPath } = require("../constant");
+const { userPath, table } = require("../constant");
+const pool = require("../../../database/pool");
 
 const path = getPath(userPath, userPath.register);
 const requestType = "post";
 
 describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
-  before(async () => {
-    await removeTestUserData();
-  });
-
   it('Should return "Missings display_name"', async () => {
     const res = await request(app)[requestType](path).send({
       email,
@@ -130,7 +121,12 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
   });
 
   it('Should return "User registered successfully"', async () => {
-    const res = await createTestUserData();
+    const res = await request(app).post(getPath(userPath, userPath.register)).send({
+      display_name: "display name",
+      email,
+      username,
+      password,
+    });
     assert.equal(res.status, 200);
     assert.equal(res.text, "User registered successfully");
   });
@@ -164,6 +160,8 @@ describe(`Test Endpoint Register, ${requestType.toUpperCase()} ${path}`, () => {
   });
 
   after(async () => {
-    await removeTestUserData();
+    try {
+      await pool.query(`DELETE FROM ${table.user} WHERE email = $1`, [email]);
+    } catch (_err) {}
   });
 });

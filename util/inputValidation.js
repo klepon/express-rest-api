@@ -1,9 +1,5 @@
 const { throwError } = require("./error");
 
-const trimSpace = (text) => {
-  return typeof text === "string" ? text.trim() : text;
-};
-
 /**
  * alphanumeric
  * [_-]
@@ -33,7 +29,7 @@ const displayName = (text) => {
   if (!regex.test(text)) {
     return [false, null];
   }
-  return [true, trimSpace(text)];
+  return [true, text];
 };
 
 /**
@@ -91,7 +87,7 @@ const bio = (text) => {
   if (!regex.test(text)) {
     return [false, null];
   }
-  return [true, trimSpace(text)];
+  return [true, text];
 };
 
 /**
@@ -104,7 +100,7 @@ const address = (text) => {
   if (!regex.test(text)) {
     return [false, null];
   }
-  return [true, trimSpace(text)];
+  return [true, text];
 };
 
 /**
@@ -197,6 +193,7 @@ const validate = (check, text) => {
  * required: 
  * object req.inputToValidate
  * array req.reqInputProps
+ * array req.optionalNoEmptyInputProps optional
  * array reg.optionalInputProps optional
  * 
  * passing:
@@ -217,9 +214,7 @@ exports.inputValidation = (req, _res, next) => {
 
   const getValue = (prop) => {
     let { [prop]: value = null } = req.inputToValidate;
-    return value && typeof value === "string" && value.trim() === ""
-      ? null
-      : value;
+    return value && typeof value === "string" ? value.trim() : value;
   };
 
   const setData = (prop, value) => {
@@ -230,7 +225,14 @@ exports.inputValidation = (req, _res, next) => {
     for (const prop of req.optionalInputProps) {
       const value = getValue(prop);
 
-      if (!value) continue;
+      if (value === null) {
+        continue;
+      }
+
+      if (value === "") {
+        setData(prop, value);
+        continue;
+      }
 
       const [isValid, cleanValue] = validate(prop, value);
 
@@ -248,6 +250,23 @@ exports.inputValidation = (req, _res, next) => {
 
       if (!value) {
         missings.push(prop);
+      } else {
+        const [isValid, cleanValue] = validate(prop, value);
+        if (!isValid) {
+          invalids.push(prop);
+        } else {
+          setData(prop, cleanValue);
+        }
+      }
+    }
+  }
+
+  if (req.optionalNoEmptyInputProps) {
+    for (const prop of req.optionalNoEmptyInputProps) {
+      const value = getValue(prop);
+
+      if (value === null) {
+        continue;
       } else {
         const [isValid, cleanValue] = validate(prop, value);
         if (!isValid) {

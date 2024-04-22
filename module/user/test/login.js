@@ -2,21 +2,22 @@ const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
 const {
-  removeTestUserData,
-  createTestUserData,
   username,
   password,
+  prepareTestUserdata,
 } = require("./util");
 const { getPath } = require("../../../util/util");
 const { userPath } = require("../constant");
+const { deleteUserRecord } = require("../middleware/deleteUserRecord");
 
 const path = getPath(userPath, userPath.login);
 const requestType = "post";
+let _token;
+let uid;
 
 describe(`Test Endpoint Login, ${requestType.toUpperCase()} ${path}`, () => {
   before(async () => {
-    await removeTestUserData();
-    await createTestUserData();
+    [_token, uid] = await prepareTestUserdata();
   });
 
   it('Should return "Auth Token"', async () => {
@@ -107,6 +108,6 @@ describe(`Test Endpoint Login, ${requestType.toUpperCase()} ${path}`, () => {
   });
 
   after(async () => {
-    await removeTestUserData();
+    await deleteUserRecord(uid)
   });
 });

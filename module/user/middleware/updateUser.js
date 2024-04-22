@@ -35,7 +35,7 @@ exports.updateUser = async (req, res, next) => {
       const { [prop]: current = null } = req.userAuthData;
       const { [prop]: newData = null } = req.cleanData;
 
-      if (newData && current !== newData) {
+      if (current !== newData) {
         index++;
         coloumns.push(`${prop} = $${index}`);
         if (prop === "avatar_id") {

@@ -2,24 +2,22 @@ const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
 const {
-  removeTestUserData,
-  createTestUserData,
-  getToken,
-  getProfile,
+  prepareTestUserdata,
 } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
 const { userPath } = require("../constant");
 const { getPath } = require("../../../util/util");
+const { deleteUserRecord } = require("../middleware/deleteUserRecord");
 
 const path = getPath(userPath, userPath.verifyEmail);
 const requestType = "patch";
 let token = "";
+let profile;
+let uid;
 
 describe(`Test Endpoint Verify email address, ${requestType.toUpperCase()} ${path}`, () => {
   before(async () => {
-    await removeTestUserData();
-    await createTestUserData();
-    token = await getToken();
+    [token, uid, profile] = await prepareTestUserdata();
   });
 
   it('Should return "Missing code"', async () => {
@@ -61,12 +59,11 @@ describe(`Test Endpoint Verify email address, ${requestType.toUpperCase()} ${pat
   });
 
   it('Should return "Email verified"', async () => {
-    const data = await getProfile(token);
     const res = await request(app)
       [requestType](path)
       .set("Authorization", token)
       .send({
-        code: data.email_validation,
+        code: profile.email_validation,
       });
     assert.equal(res.status, 200);
     assert.equal(
@@ -90,6 +87,6 @@ describe(`Test Endpoint Verify email address, ${requestType.toUpperCase()} ${pat
   });
 
   after(async () => {
-    await removeTestUserData();
+    await deleteUserRecord(uid);
   });
 });

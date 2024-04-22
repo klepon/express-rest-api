@@ -87,3 +87,5 @@
 - invalid token
 - user not found
 - user added to deletion schedule
+
+<!-- todo add history test -->

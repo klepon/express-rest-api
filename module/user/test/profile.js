@@ -1,20 +1,20 @@
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
-const { removeTestUserData, createTestUserData, getToken } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
 const { getPath } = require("../../../util/util");
 const { userPath, nonExistPuidToken } = require("../constant");
+const { prepareTestUserdata } = require("./util");
+const { deleteUserRecord } = require("../middleware/deleteUserRecord");
 
 const path = getPath(userPath, userPath.profile);
 const requestType = "get";
 let token = "";
+let uid;
 
 describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
   before(async () => {
-    await removeTestUserData();
-    await createTestUserData();
-    token = await getToken();
+    [token, uid] = await prepareTestUserdata();
   });
 
   testAuth(requestType, path);
@@ -53,6 +53,6 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
   });
 
   after(async () => {
-    await removeTestUserData();
+    await deleteUserRecord(uid)
   });
 });

@@ -8,7 +8,7 @@ exports.validEmailValue = 1;
 
 exports.onFinishUser = {
   emailUpdated: "emailUpdated",
-  deleted: "deleted",
+  deletionSchedule: "deletionSchedule",
   updated: "updated",
 };
 

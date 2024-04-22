@@ -2,27 +2,27 @@ const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
 const {
-  removeTestUserData,
-  createTestUserData,
-  getToken,
   getProfile,
   email,
   emailEdit,
   username,
+  prepareTestUserdata,
+  usernameEdit,
 } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
 const { getPath } = require("../../../util/util");
-const { userPath } = require("../constant");
+const { userPath, table } = require("../constant");
+const { deleteUserRecord } = require("../middleware/deleteUserRecord");
+const pool = require("../../../database/pool");
 
 const path = getPath(userPath, userPath.profile);
 const requestType = "patch";
 let token = "";
+let uid;
 
 describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
   before(async () => {
-    await removeTestUserData();
-    await createTestUserData();
-    token = await getToken();
+    [token, uid] = await prepareTestUserdata();
   });
 
   it('Should return "Invalid display_name"', async () => {
@@ -74,8 +74,6 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
 
   it('Should return "Invalid avatar_id"', async () => {
     const res = await request(app)[requestType](path).send({
-      display_name: "",
-      email: "",
       avatar_id: "1.2",
     });
     assert.equal(res.status, 400);
@@ -87,8 +85,6 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
 
   it('Should return "Invalid bio"', async () => {
     const res = await request(app)[requestType](path).send({
-      display_name: "",
-      email: "",
       bio: "as as as ?",
     });
     assert.equal(res.status, 400);
@@ -100,8 +96,7 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
 
   it('Should return "Invalid address"', async () => {
     const res = await request(app)[requestType](path).send({
-      display_name: "",
-      email: "",
+      bio: "",
       address: "asas?",
     });
     assert.equal(res.status, 400);
@@ -113,8 +108,7 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
 
   it('Should return "Invalid latlng"', async () => {
     const res = await request(app)[requestType](path).send({
-      display_name: "",
-      email: "",
+      address: "adress-valid",
       latlng: "10.12,asd",
     });
     assert.equal(res.status, 400);
@@ -126,8 +120,6 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
 
   it('Should return "Invalid timezone"', async () => {
     const res = await request(app)[requestType](path).send({
-      display_name: "",
-      email: "",
       timezone: "-a2",
     });
     assert.equal(res.status, 400);
@@ -143,6 +135,7 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
     const res = await request(app)
       [requestType](path)
       .send({
+        display_name: "display name",
         timezone: null,
       })
       .set("Authorization", token);
@@ -160,10 +153,11 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
       [requestType](path)
       .send({
         display_name: "display name edit",
-        username: "usernameEdit",
-        avatar_id: null,
+        username: usernameEdit,
+        avatar_id: 123,
         bio: "my bio is this-100",
         address: "jalan dewi sartika, 120-x/2",
+        latlng: "123.123,123.234",
         timezone: "-12",
       })
       .set("Authorization", token);
@@ -172,9 +166,11 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
     const afterShould = {
       ...beforeData,
       display_name: "display name edit",
-      username: "usernameEdit",
+      username: usernameEdit,
+      avatar_id: 123,
       bio: "my bio is this-100",
       address: "jalan dewi sartika, 120-x/2",
+      latlng: "123.123,123.234",
       timezone: "-12",
     };
 
@@ -184,7 +180,7 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
 
     delete afterShould.update_at;
     delete afterData.update_at;
-    assert.deepEqual(afterShould, afterData);
+    assert.deepEqual(afterData, afterShould);
   });
 
   it('Should return "Profile updated include email"', async () => {
@@ -194,8 +190,9 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
       [requestType](path)
       .send({
         email: emailEdit,
-        username: "usernameEdit",
-        bio: "bio edit",
+        username: usernameEdit,
+        avatar_id: 0,
+        latlng: "",
       })
       .set("Authorization", token);
 
@@ -203,8 +200,9 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
     const afterShould = {
       ...beforeData,
       email: emailEdit,
-      username: "usernameEdit",
-      bio: "bio edit",
+      username: usernameEdit,
+      avatar_id: 0,
+      latlng: "",
     };
 
     assert.equal(res.status, 200);
@@ -217,44 +215,45 @@ describe(`Test Endpoint Profile, ${requestType.toUpperCase()} ${path}`, () => {
     delete afterData.update_at;
     delete afterShould.email_validation;
     delete afterData.email_validation;
-    assert.deepEqual(afterShould, afterData);
+    assert.deepEqual(afterData, afterShould);
   });
 
   it('Should return "Fail email exist"', async () => {
-    await createTestUserData();
-    token = await getToken();
-
     const res = await request(app)
       [requestType](path)
       .send({
-        email: emailEdit,
+        email: process.env.ADMIN_EMAIL,
       })
       .set("Authorization", token);
     assert.equal(res.status, 500);
     assert.equal(
       res.text,
-      `{"detail":"Key (email)=(${emailEdit}) already exists.","service":"App catch error","code":"23505"}`
+      `{"detail":"Key (email)=(${process.env.ADMIN_EMAIL}) already exists.","service":"App catch error","code":"23505"}`
     );
   });
 
   it('Should return "Fail username exist"', async () => {
-    token = await getToken();
-
     const res = await request(app)
       [requestType](path)
       .send({
-        username: "usernameEdit",
+        username: process.env.ADMIN_USERNAME,
         avatar_id: 211,
       })
       .set("Authorization", token);
     assert.equal(res.status, 500);
     assert.equal(
       res.text,
-      '{"detail":"Key (username)=(usernameEdit) already exists.","service":"App catch error","code":"23505"}'
+      `{"detail":"Key (username)=(${process.env.ADMIN_USERNAME}) already exists.","service":"App catch error","code":"23505"}`
     );
   });
 
   after(async () => {
-    await removeTestUserData();
+    await deleteUserRecord(uid);
+    try {
+      await pool.query(
+        `DELETE FROM ${table.user} WHERE email = $1 OR email = $2`,
+        [email, emailEdit]
+      );
+    } catch (_err) {}
   });
 });

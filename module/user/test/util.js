@@ -1,33 +1,18 @@
 const request = require("supertest");
 const app = require("../../../app");
-const pool = require("../../../database/pool");
-const { table } = require("../constant");
 const { getPath } = require("../../../util/util");
 const { userPath } = require("../constant");
 
 exports.username = "12345678a_-";
+exports.usernameEdit = "12345678a_-edit";
 exports.password = "1aB!@# $%^&*()_-";
 exports.email = "test@maijima.com";
 exports.emailEdit = "edit-test@maijima.com";
 
-exports.removeTestScheduleData = async (uid) => {
-  try {
-    await pool.query(`DELETE FROM ${table.schedule} WHERE uid = $1`, [uid]);
-  } catch (_err) {}
-};
 
-exports.removeTestUserData = async () => {
+const createTestUserData = async () => {
   try {
-    await pool.query(
-      `DELETE FROM ${table.user} WHERE email = $1 OR email = $2`,
-      [this.email, this.emailEdit]
-    );
-  } catch (_err) {}
-};
-
-exports.createTestUserData = async () => {
-  try {
-    return await request(app).post("/user/register").send({
+    await request(app).post(getPath(userPath, userPath.register)).send({
       display_name: "display name",
       email: this.email,
       username: this.username,
@@ -38,8 +23,8 @@ exports.createTestUserData = async () => {
   }
 };
 
-exports.getToken = async () => {
-  const res = await request(app).post("/user/login").send({
+const getToken = async () => {
+  const res = await request(app).post(getPath(userPath, userPath.login)).send({
     username: this.username,
     password: this.password,
   });
@@ -51,4 +36,11 @@ exports.getProfile = async (token) => {
     .get(getPath(userPath, userPath.profile))
     .set("Authorization", token);
   return JSON.parse(user.text);
+};
+
+exports.prepareTestUserdata = async () => {
+  await createTestUserData();
+  const token = await getToken();
+  const profile = await this.getProfile(token);
+  return [token, profile.uid, profile];
 };

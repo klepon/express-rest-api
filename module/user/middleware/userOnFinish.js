@@ -16,7 +16,7 @@ exports.userOnFinish = async (req, res, next) => {
       return;
     }
 
-    if ([onFinishUser.updated, onFinishUser.deleted].includes(req.onFinish)) {
+    if ([onFinishUser.updated, onFinishUser.deletionSchedule].includes(req.onFinish)) {
       userHistory(req);
       return;
     }

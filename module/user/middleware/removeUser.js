@@ -53,7 +53,7 @@ exports.removeUser = async (req, res, next) => {
 
     await pool.query("COMMIT");
 
-    req.onFinish = onFinishUser.deleted;
+    req.onFinish = onFinishUser.deletionSchedule;
     res.status(200).send("User will be deleted in 28 days");
   } catch (error) {
     await pool.query("ROLLBACK");

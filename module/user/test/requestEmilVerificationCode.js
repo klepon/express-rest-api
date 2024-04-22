@@ -1,48 +1,45 @@
 const request = require("supertest");
 const assert = require("assert");
 const app = require("../../../app");
-const {
-  removeTestUserData,
-  createTestUserData,
-  getToken,
-  getProfile,
-  email,
-} = require("./util");
+const { email, prepareTestUserdata } = require("./util");
 const { testAuth } = require("../../../util/testAuth");
 const { userPath } = require("../constant");
 const { getPath } = require("../../../util/util");
 const { maskEmail } = require("../../../util/maskEmail");
+const { deleteUserRecord } = require("../middleware/deleteUserRecord");
 
 const path = getPath(userPath, userPath.requestEmailVerificationCode);
 const requestType = "get";
 let token = "";
+let profile;
+let uid;
 
 describe(`Test Endpoint Request email verification code, ${requestType.toUpperCase()} ${path}`, () => {
   before(async () => {
-    await removeTestUserData();
-    await createTestUserData();
-    token = await getToken();
+    [token, uid, profile] = await prepareTestUserdata();
   });
 
   testAuth(requestType, path);
 
   it('Should return "Verification code sent"', async () => {
-    const res = await request(app)[requestType](path).set("Authorization", token);
+    const res = await request(app)
+      [requestType](path)
+      .set("Authorization", token);
     assert.equal(res.status, 200);
     assert.equal(res.text, maskEmail(email));
   });
 
   it('Should return "Email already validate"', async () => {
-    const user = await getProfile(token);
-
     await request(app)
       .patch(getPath(userPath, userPath.verifyEmail))
       .set("Authorization", token)
       .send({
-        code: user.email_validation,
+        code: profile.email_validation,
       });
 
-    const res = await request(app)[requestType](path).set("Authorization", token);
+    const res = await request(app)
+      [requestType](path)
+      .set("Authorization", token);
     assert.equal(res.status, 400);
     assert.equal(
       res.text,
@@ -51,6 +48,6 @@ describe(`Test Endpoint Request email verification code, ${requestType.toUpperCa
   });
 
   after(async () => {
-    await removeTestUserData();
+    await deleteUserRecord(uid);
   });
 });
